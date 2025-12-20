@@ -8,15 +8,21 @@ const RecentlyPlayed = () => {
     ]
 
     return ( 
-        <aside>
-            <div>Recently Played</div>
-
-            <ul>
-                <li>
-                    {recentlyPlayed}
-                </li>
-            </ul>
-        </aside>
+        <div className="flex flex-row">
+            {recentlyPlayed.map(song => (
+                <div 
+                    key={song.id}
+                    className="card flex flex-col grow justiify-center items-center"
+                >
+                    <img 
+                        src='../public/image.webp' alt='Song image' 
+                        className="w-20"
+                    />
+                    <span>{song.title}</span>
+                    <span>{song.artist}</span>
+                </div>
+            ))}
+        </div>
     );
 }
  

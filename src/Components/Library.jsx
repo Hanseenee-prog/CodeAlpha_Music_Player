@@ -17,13 +17,13 @@ const Library = () => {
 
     return (
         <section className="relative my-5">
-            <div className="sticky">
-                <h1 className="text-3xl font-bold">Your Library</h1>
-                <p className="text-xl">Manage your music collection</p>
+            <div className="sticky top-40">
+                <h1 className="text-2xl font-bold">Your Library</h1>
+                <p className="text-[14px]">Manage your music collection</p>
             </div>
 
-            <div className="flex flex-col overflow-y-scroll h-60">
-                <div className="flex flex-col">
+            <div className="flex flex-col overflow-y-scroll h-100">
+                <div className="flex flex-col h-20">
                     {songs.map((song, index) => (
                         <Song key={index} song={song} />
                     ))}

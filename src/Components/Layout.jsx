@@ -6,19 +6,19 @@ import MiniBar from "./MiniBar";
 
 const Layout = () => {
     return (
-        <div className="flex overflow-hidden h-screen bg-gray-200 p-2">
-            <div className="w-50 shrink-0">
+        <div className="flex overflow-hidden h-screen bg-gray-200">
+            <div className="md:w-50 shrink-0">
                 <SideBar />
-                <BottomNavBar />
             </div>
 
-            <main className="overflow-y-auto gap-4 w-full flex-1 flex flex-col grow p-4 rounded-2xl bg-gray-100 mx-2">
-                <div>
+            <main className="overflow-y-auto gap-4 w-full flex-1 flex flex-col grow">
+                <div className="rounded-2xl bg-gray-100 p-4">
                     <SearchBar />
                     <Outlet />
                 </div>
                 <MiniBar />
             </main>
+            <BottomNavBar />
         </div>
     );
 }
