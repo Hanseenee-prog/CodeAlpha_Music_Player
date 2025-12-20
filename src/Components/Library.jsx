@@ -1,19 +1,11 @@
 import Song from "./Song";
 import '../index.css';
+import songData from "../data/songData";
+import React from "react";
+import { useAudio } from "../Contexts/AudioContext";
 
-const Library = () => {
-    const songs = [
-        { title: "Song A", artist: "Artist 1", album: "Album X" },
-        { title: "Song B", artist: "Artist 2", album: "Album Y" },
-        { title: "Song C", artist: "Artist 3", album: "Album Z" },
-        { title: "Song D", artist: "Artist 4", album: "Album W" },
-        { title: "Song E", artist: "Artist 5", album: "Album V" },
-        { title: "Song F", artist: "Artist 6", album: "Album U" },
-        { title: "Song G", artist: "Artist 7", album: "Album T" },
-        { title: "Song H", artist: "Artist 8", album: "Album S" },
-        { title: "Song I", artist: "Artist 9", album: "Album R" },
-        { title: "Song J", artist: "Artist 10", album: "Album Q" }
-    ];
+const Library = React.memo(() => {
+    const { playSong } = useAudio();
 
     return (
         <section className="relative my-5">
@@ -23,14 +15,20 @@ const Library = () => {
             </div>
 
             <div className="flex flex-col overflow-y-scroll h-100">
-                <div className="flex flex-col h-20">
-                    {songs.map((song, index) => (
-                        <Song key={index} song={song} />
+                <div 
+                    className="flex flex-col h-20"
+                >
+                    {songData.map((song, index) => (
+                        <Song 
+                            key={index} 
+                            song={song} 
+                            onPlay={() => playSong(song)}
+                        />
                     ))}
                 </div>
             </div>
         </section>
     );
-}
+})
 
 export default Library;
