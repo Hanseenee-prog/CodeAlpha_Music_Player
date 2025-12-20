@@ -1,11 +1,12 @@
 import { createContext, useState, useRef, useContext, useEffect } from "react";
+import songs from "../data/songs";
 
 const AudioContext = createContext();
 
 /* eslint-disable react-refresh/only-export-components */
 
 export const AudioProvider = ({ children }) => {
-    const [currentSong, setCurrentSong] = useState(null);
+    const [currentSongIndex, setCurrentSongIndex] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
@@ -33,10 +34,10 @@ export const AudioProvider = ({ children }) => {
         }
     }, [])
 
-    const playSong = (song) => {
-        setCurrentSong(song);
+    const playSong = (index) => {
+        setCurrentSongIndex(index);
 
-        audioRef.current.src = song.audioSrc;
+        audioRef.current.src = songs[currentSongIndex].audioSrc;
         audioRef.current.play();
 
         setIsPlaying(true);
@@ -50,11 +51,17 @@ export const AudioProvider = ({ children }) => {
     }
 
     const handleNext = () => {
+        const index = currentSongIndex === songs.length - 1 ? 0 : currentSongIndex + 1;
 
+        setCurrentSongIndex(index);
+        playSong(index);
     }
 
     const handlePrev = () => {
-        
+        const index = currentSongIndex === 0 ? songs.length - 1 : currentSongIndex - 1;
+
+        setCurrentSongIndex(index);
+        playSong(index);
     }
 
     const handleSeek = (time) => {
@@ -63,7 +70,7 @@ export const AudioProvider = ({ children }) => {
     }
 
     const value = {
-        currentSong, setCurrentSong,
+        currentSongIndex, setCurrentSongIndex,
         isPlaying, setIsPlaying,
         currentTime, setCurrentTime,
         duration, setDuration,

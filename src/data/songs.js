@@ -1,4 +1,4 @@
-const songData = [
+const songs = [
     {
         id: 1,
         title: 'The Rise',
@@ -64,4 +64,4 @@ const songData = [
     }
 ];
 
-export default songData;
+export default songs;

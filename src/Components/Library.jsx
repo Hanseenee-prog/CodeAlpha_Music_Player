@@ -1,6 +1,6 @@
 import Song from "./Song";
 import '../index.css';
-import songData from "../data/songData";
+import songs from "../data/songs";
 import React from "react";
 import { useAudio } from "../Contexts/AudioContext";
 
@@ -18,11 +18,11 @@ const Library = React.memo(() => {
                 <div 
                     className="flex flex-col h-20"
                 >
-                    {songData.map((song, index) => (
+                    {songs.map((song, index) => (
                         <Song 
                             key={index} 
                             song={song} 
-                            onPlay={() => playSong(song)}
+                            onPlay={() => playSong(index)}
                         />
                     ))}
                 </div>

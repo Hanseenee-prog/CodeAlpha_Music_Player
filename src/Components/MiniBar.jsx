@@ -1,15 +1,17 @@
 import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
 import { useAudio } from '../Contexts/AudioContext';
+import songs from '../data/songs';
 
 const MiniBar = () => {
     const { 
-        currentSong, currentTime,
-        handleSeek, isPlaying, togglePlayPause
+        currentSongIndex, currentTime,
+        handleSeek, isPlaying, togglePlayPause,
+        handleNext, handlePrev
     } = useAudio();
 
-    if (!currentSong) return null;
+    if (!songs[currentSongIndex]) return null;
 
-    const { title, artist, duration } = currentSong;
+    const { title, artist, duration } = songs[currentSongIndex];
 
     // Converts time like "5:30" to seconds
     const timeToSec = (time) => {
@@ -49,13 +51,18 @@ const MiniBar = () => {
                 />
                 
                 <div className='w-3/5 flex justify-between'>
-                    <button><SkipBack /></button>
+                    <button
+                        onClick={handlePrev}
+                    ><SkipBack /></button>
+
                     <button
                         onClick={togglePlayPause}
                     >
                         {isPlaying ? <Pause /> : <Play />}
                     </button>
-                    <button><SkipForward /></button>
+                    <button
+                        onClick={handleNext}
+                    ><SkipForward /></button>
                 </div>
             </div>
 
