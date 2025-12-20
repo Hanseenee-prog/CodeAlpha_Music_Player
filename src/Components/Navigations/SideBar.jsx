@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const SideBar = () => {
     return ( 
-        <aside className="border-2 w-[25%] h-full bg-amber-300 hidden md:block">
+        <aside className="border-2 w-full h-full bg-amber-300 hidden md:block">
             <h2 className="text-lg font-bold">My Music App</h2>
                 <ul>
                     <Link to="/">
