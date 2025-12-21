@@ -7,7 +7,7 @@ import MiniBar from "./MiniBar";
 const Layout = () => {
     return (
         <div className="flex overflow-hidden h-screen bg-gray-200">
-            <div className="md:w-50 shrink-0">
+            <div className="md:w-15 lg:w-50 shrink-0">
                 <SideBar />
             </div>
 

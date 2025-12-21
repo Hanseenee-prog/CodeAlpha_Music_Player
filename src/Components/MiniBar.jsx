@@ -1,4 +1,8 @@
-import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
+import { 
+    Play, Pause, SkipBack, SkipForward, 
+    Volume1Icon, ShuffleIcon, RepeatIcon 
+} from 'lucide-react';
+
 import { useAudio } from '../Contexts/AudioContext';
 import songs from '../data/songs';
 
@@ -29,44 +33,83 @@ const MiniBar = () => {
     }
 
     return (
-        <div className="justify-between sticky bottom-0 w-full h-30 bg-gray-300 rounded-t-lg flex items-center">
-            <div className="flex flex-row items-center gap-2">
+        <div className="justify-between sticky bottom-16 md:bottom-0 w-full bg-gray-300 rounded-lg flex items-center">
+            <div className="flex flex-row items-center gap-2 shrink-0 w-40">
                 <img src='../public/image.webp' className='w-10 mx-2' />
 
                 <span className='flex flex-col text-[14px]'>
-                    <span>{title}</span>
+                    <span className='whitespace-nowrap font-semibold'>{title}</span>
                     <span>{artist}</span>
-                    <span className="">Now Playing</span>
                 </span>
             </div>
 
-            <div className='flex flex-col items-center w-3/5'>
-                <input 
-                    type="range" 
-                    min="0" 
-                    max={duration}
-                    value={progress}
-                    onChange={handleSliderChange} 
-                    className="mx-4 w-4/5" 
-                />
-                
-                <div className='w-3/5 flex justify-between'>
-                    <button
-                        onClick={handlePrev}
-                    ><SkipBack /></button>
+            <div className='w-2/5 flex gap-1 h-20 md:h-30 justify-center items-center'>
+                <div className='hidden md:flex flex-col items-center w-4/5'>
+                    <div className='flex flex-row w-full'>
+                        <span className='hidden md:block'>{Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60).toString().padStart(2, '0')}</span>
+                        
+                        <input 
+                            type="range" 
+                            min="0" 
+                            max={duration}
+                            value={progress}
+                            onChange={handleSliderChange} 
+                            className="mx-2 w-[90%]" 
+                        />
+                        
+                        <span className='hidden md:block'>{duration}</span>
+                    </div>
+                    
+                    <div className='w-3/5 flex justify-between'>
+                        <button>
+                            <ShuffleIcon />
+                        </button>
 
-                    <button
-                        onClick={togglePlayPause}
-                    >
-                        {isPlaying ? <Pause /> : <Play />}
-                    </button>
-                    <button
-                        onClick={handleNext}
-                    ><SkipForward /></button>
+                        <button
+                            onClick={handlePrev}
+                        ><SkipBack /></button>
+
+                        <button
+                            onClick={togglePlayPause}
+                        >
+                            {isPlaying ? <Pause /> : <Play />}
+                        </button>
+
+                        <button
+                            onClick={handleNext}
+                        ><SkipForward /></button>
+
+                        <button>
+                            <RepeatIcon />
+                        </button>
+                    </div>
+                </div>
+            </div>
+          
+            <div className='hidden md:block'>
+                <div className='flex'>
+                    <Volume1Icon />
+                    <input 
+                            type="range" 
+                            min="0" 
+                            max="100"
+                            className="mx-1 w-2/5" 
+                        />
                 </div>
             </div>
 
-            <div>{Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60).toString().padStart(2, '0')} / {duration}</div>
+            <div className='flex flex-row mx-4 gap-2 md:hidden'>
+                <div className=''>
+                    <span>{Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60).toString().padStart(2, '0')}</span> 
+                </div>
+
+                <button
+                    onClick={togglePlayPause}
+                    className=''
+                >
+                    {isPlaying ? <Pause /> : <Play />}
+                </button>
+            </div>
         </div>
     )
 }

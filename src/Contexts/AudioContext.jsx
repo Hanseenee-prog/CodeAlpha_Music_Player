@@ -14,6 +14,7 @@ export const AudioProvider = ({ children }) => {
 
     useEffect(() => {
         audioRef.current = new Audio();
+
         const audio = audioRef.current;
 
         audio.addEventListener('loadedmeta', () => {
@@ -47,7 +48,7 @@ export const AudioProvider = ({ children }) => {
         if (isPlaying) audioRef.current.pause();
         else audioRef.current.play();
 
-        setIsPlaying(!isPlaying)
+        setIsPlaying(!isPlaying);
     }
 
     const handleNext = () => {
