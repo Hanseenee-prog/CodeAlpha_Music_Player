@@ -8,8 +8,8 @@ const Library = React.memo(() => {
     const { playSong } = useAudio();
 
     return (
-        <section className="relative my-5">
-            <div className="sticky top-40">
+        <section className="my-5 sticky top-40">
+            <div className="">
                 <h1 className="text-2xl font-bold">Your Library</h1>
                 <p className="text-[14px]">Manage your music collection</p>
             </div>

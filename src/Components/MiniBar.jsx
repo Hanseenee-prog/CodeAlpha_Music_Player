@@ -1,6 +1,7 @@
 import { 
     Play, Pause, SkipBack, SkipForward, 
-    Volume1Icon, ShuffleIcon, RepeatIcon 
+    Volume1Icon, VolumeX, ShuffleIcon, 
+    RepeatIcon, Repeat1, Heart
 } from 'lucide-react';
 
 import { useAudio } from '../Contexts/AudioContext';
@@ -10,7 +11,8 @@ const MiniBar = () => {
     const { 
         currentSongIndex, currentTime,
         handleSeek, isPlaying, togglePlayPause,
-        handleNext, handlePrev
+        handleNext, handlePrev, volume, handleVolChange,
+        repeat, shuffle, setShuffle, toggleRepeat
     } = useAudio();
 
     if (!songs[currentSongIndex]) return null;
@@ -61,43 +63,63 @@ const MiniBar = () => {
                     </div>
                     
                     <div className='w-3/5 flex justify-between'>
-                        <button>
-                            <ShuffleIcon />
+                        {/* Shuffle Button */}
+                        <button
+                            onClick={() => setShuffle(!shuffle)}
+                            className={shuffle ? 'text-blue-600': 'text-gray-600'}    
+                        >
+                            <ShuffleIcon size={20} />
                         </button>
 
+                        {/* SkipBackward Button */}
                         <button
                             onClick={handlePrev}
-                        ><SkipBack /></button>
+                        ><SkipBack size={20} /></button>
 
                         <button
                             onClick={togglePlayPause}
                         >
-                            {isPlaying ? <Pause /> : <Play />}
+                            {isPlaying ? <Pause size={28} /> : <Play size={28} />}
                         </button>
 
+                        {/* SkipForward Button */}
                         <button
                             onClick={handleNext}
-                        ><SkipForward /></button>
+                        ><SkipForward size={20} /></button>
 
-                        <button>
-                            <RepeatIcon />
+                        {/* Repeat Button */}
+                        <button
+                            onClick={toggleRepeat}
+                            className={repeat !== 'off' ? 'text-blue-600' : 'text-gray-600'}
+                        >
+                            {repeat === 'one' ? <Repeat1 size={20} /> : <RepeatIcon size={20} />}
                         </button>
                     </div>
                 </div>
             </div>
           
+            {/* Volume button */}
             <div className='hidden md:block'>
-                <div className='flex'>
-                    <Volume1Icon />
+                <div className='flex gap-3'>
+                    {volume === '0' ? <VolumeX /> : <Volume1Icon />}
+                    
                     <input 
                             type="range" 
                             min="0" 
                             max="100"
+                            value={volume}
+                            onChange={(e) => handleVolChange(e.target.value)}
                             className="mx-1 w-2/5" 
                         />
+                    <Heart 
+                        fill='red'
+                    />
                 </div>
+
+
             </div>
 
+            {/* Mobile Controls */}
             <div className='flex flex-row mx-4 gap-2 md:hidden'>
                 <div className=''>
                     <span>{Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60).toString().padStart(2, '0')}</span> 
