@@ -6,13 +6,16 @@ import { Library as LibraryIcon, ListFilter, Shuffle } from "lucide-react";
 import handleSongClick from "../utils/handleSongClick";
 
 const Library = React.memo(() => {
-    const { playSong, getPlaybackQueue } = useAudio();
+    const { playSong, getPlaybackQueue, currentSongIndex } = useAudio();
     const queue = getPlaybackQueue();
 
     // Randomizes song selection (Optional logic for button)
     const handleShuffle = () => {
-        const randomIndex = Math.floor(Math.random() * songs.length);
-        playSong(randomIndex, songs);
+        let randomIndex;
+        do {
+            randomIndex = Math.floor(Math.random() * songs.length);
+        } while (randomIndex === currentSongIndex && queue.length > 1);
+        playSong(randomIndex, queue);
     };
 
     return (

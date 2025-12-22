@@ -164,14 +164,13 @@ export const AudioProvider = ({ children }) => {
 
             if (nextShuffleState) {
                 // SHUFFLE ON: Create a randomized version of the queue
-                // Pro Tip: Keep the 'nowPlaying' song at the top so it doesn't jump
                 const currentSong = prevQueue[currentSongIndex];
                 const otherSongs = prevQueue.filter((_, i) => i !== currentSongIndex);
                 
                 newQueue = [currentSong, ...otherSongs.sort(() => Math.random() - 0.5)];
                 setCurrentSongIndex(0);
             } else {
-                // SHUFFLE OFF: Restore the original order from your backup
+                // SHUFFLE OFF: Restore the original order
                 newQueue = [...originalQueue];
                 
                 // Re-find the index of the current song in the original order
