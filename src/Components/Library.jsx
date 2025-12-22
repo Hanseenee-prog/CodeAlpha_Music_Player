@@ -3,14 +3,16 @@ import songs from "../data/songs";
 import React from "react";
 import { useAudio } from "../Contexts/AudioContext";
 import { Library as LibraryIcon, ListFilter, Shuffle } from "lucide-react";
+import handleSongClick from "../utils/handleSongClick";
 
 const Library = React.memo(() => {
-    const { playSong } = useAudio();
+    const { playSong, getPlaybackQueue } = useAudio();
+    const queue = getPlaybackQueue();
 
     // Randomizes song selection (Optional logic for button)
     const handleShuffle = () => {
         const randomIndex = Math.floor(Math.random() * songs.length);
-        playSong(randomIndex);
+        playSong(randomIndex, songs);
     };
 
     return (
@@ -48,12 +50,10 @@ const Library = React.memo(() => {
                 {songs.map((song, index) => (
                     <Song 
                         key={song.id || index} 
-                        index={index}
                         song={song} 
-                        onPlay={() => playSong(index)}
+                        onPlay={() => handleSongClick(song, queue, playSong)}
                     />
                 ))}
-                {/* Bottom Padding to ensure last song is visible above MiniBar */}
                 <div className="h-24" />
             </div>
         </section>

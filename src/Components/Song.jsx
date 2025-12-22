@@ -1,16 +1,18 @@
 import { Play, Heart, Plus, MoreVertical, Pause } from "lucide-react";
 import { useAudio } from "../Contexts/AudioContext";
 
-const Song = ({ song, index, onPlay }) => {
+const Song = ({ song, onPlay }) => {
     const { title, artist, duration, coverImage } = song;
-    const { currentSongIndex, isPlaying } = useAudio();
-    const isActive = currentSongIndex === index;
+    const { currentSongIndex, isPlaying, getPlaybackQueue } = useAudio();
+    
+    const queue = getPlaybackQueue();
+    const isActive = queue[currentSongIndex].id === song.id;
 
     return (
         <div 
             className={`group flex items-center justify-between p-3 rounded-xl transition-all duration-300 cursor-pointer
                 ${isActive ? 'bg-blue-50/80 shadow-sm' : 'hover:bg-gray-50'}`}
-            onClick={onPlay}
+            onClick={() => onPlay()}
         >
             {/* Left: Artwork & Info */}
             <div className="flex items-center gap-4 min-w-0">

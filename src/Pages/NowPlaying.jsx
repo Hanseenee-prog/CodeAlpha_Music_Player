@@ -11,10 +11,12 @@ const NowPlaying = () => {
     const { 
         nowPlaying, isPlaying, togglePlayPause, 
         handleNext, handlePrev, currentTime, handleSeek,
-        shuffle, setShuffle, repeat, toggleRepeat, activeQueue 
+        shuffle, toggleShuffle, repeat, toggleRepeat, getPlaybackQueue, 
     } = useAudio();
 
     const [showMobileQueue, setShowMobileQueue] = useState(false);
+
+    const queue = getPlaybackQueue();
 
     const timeToSec = (time) => {
         if (!time) return 0;
@@ -95,7 +97,7 @@ const NowPlaying = () => {
 
                     {/* Control Hub */}
                     <div className="flex items-center justify-between px-6 py-4 md:py-6 bg-gray-50/50 rounded-4xl border border-gray-100">
-                        <button onClick={() => setShuffle(!shuffle)} className={`transition-colors ${shuffle ? 'text-blue-600' : 'text-gray-400'}`}>
+                        <button onClick={() => toggleShuffle()} className={`transition-colors ${shuffle ? 'text-blue-600' : 'text-gray-400'}`}>
                             <Shuffle size={18} />
                         </button>
                         <div className="flex items-center gap-4 md:gap-8">
@@ -129,7 +131,7 @@ const NowPlaying = () => {
                 </div>
 
                 <div className="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar">
-                    {activeQueue.slice(0, 3).map((song, idx) => (
+                    {queue.slice(0, 8).map((song, idx) => (
                         <div key={idx} className="group flex items-center gap-4 p-2 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer">
                             <img src={song.coverImage} className="w-12 h-12 rounded-xl object-cover shadow-sm" alt="art" />
                             <div className="flex-1 min-w-0">

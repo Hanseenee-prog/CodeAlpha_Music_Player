@@ -11,11 +11,12 @@ const MiniBar = () => {
         currentSongIndex, currentTime, handleSeek, isPlaying, 
         togglePlayPause, handleNext, handlePrev, volume, 
         handleVolChange, repeat, shuffle, toggleShuffle, toggleRepeat,
-        setNowPlaying, activeQueue
+        setNowPlaying, getPlaybackQueue
     } = useAudio();
 
     const navigate = useNavigate();
-    const song = activeQueue[currentSongIndex];
+    const queue = getPlaybackQueue();
+    const song = queue[currentSongIndex];
 
     if (!song) return null;
 
@@ -100,7 +101,7 @@ const MiniBar = () => {
             {/* Controls Section (Center) */}
             <div className="flex items-center gap-3 md:gap-8 justify-center">
                 <button
-                    onClick={(e) => { e.stopPropagation(); toggleShuffle(!shuffle); }}
+                    onClick={(e) => { e.stopPropagation(); toggleShuffle(); }}
                     className={`hidden lg:block p-2 rounded-full hover:bg-gray-100 transition-all ${shuffle ? 'text-blue-600' : 'text-gray-400'}`}
                 >
                     <Shuffle size={20} />

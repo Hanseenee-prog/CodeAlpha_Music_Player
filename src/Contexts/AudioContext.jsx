@@ -7,24 +7,29 @@ const AudioContext = createContext();
 /* eslint-disable react-hooks/exhaustive-deps */
 
 export const AudioProvider = ({ children }) => {
-    const [currentSongIndex, setCurrentSongIndex] = useState(0);
+    const [currentSongIndex, setCurrentSongIndex] = useState(() => JSON.parse(localStorage.getItem('current-song-index')) || 0);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const [volume, setVolume] = useState(70);
     const [repeat, setRepeat] = useState('off');
-    const [shuffle, setShuffle] = useState(false);
+    const [shuffle, setShuffle] = useState(() => JSON.parse(localStorage.getItem('shuffle-mode')) || false);
     const [nowPlaying, setNowPlaying] = useState(songs[currentSongIndex]);
     const audioRef = useRef(null);
 
-    const [originalQueue, setOriginalQueue] = useState(songs); // The source (playlist/library)
-    const [activeQueue, setActiveQueue] = useState(songs);     // The list that respects shuffle
-    const [history, setHistory] = useState(() => JSON.parse(localStorage.getItem('music-history')) || []);               // Recently played
+    const [originalQueue, setOriginalQueue] = useState(() => JSON.parse(localStorage.getItem('original-queue')) || songs); // The source (playlist/library)
+    const [activeQueue, setActiveQueue] = useState(() => JSON.parse(localStorage.getItem('active-queue')) || songs); // The list that respects shuffle
+    const [history, setHistory] = useState(() => JSON.parse(localStorage.getItem('music-history')) || []); // Recently played
+
+    const getPlaybackQueue = () => shuffle ? activeQueue : originalQueue;
 
     useEffect(() => {
         audioRef.current = new Audio();
         audioRef.current.volume = 0.7; // Initial volume
-        audioRef.current.src = activeQueue[currentSongIndex].audioSrc; // Load the song with currentIndex on first mount
+
+        const queue = getPlaybackQueue();
+        audioRef.current.src = queue[currentSongIndex].audioSrc // Load the song with currentIndex on first mount
+        setNowPlaying(queue[currentSongIndex]);
 
         const audio = audioRef.current;
 
@@ -42,23 +47,22 @@ export const AudioProvider = ({ children }) => {
         }
     }, [])
 
-    const playSong = (index, newQueue = songs ) => {
+    useEffect(() => {
+        localStorage.setItem('current-song-index', JSON.stringify(currentSongIndex))
+    }, [currentSongIndex])
+
+    const playSong = (index, newQueue = originalQueue ) => {
         const song = newQueue[index];
         if (!song) return;
 
-        // Let playSong play from the queue (so that playlists and favorites ca be respected)
-        setOriginalQueue(newQueue);
-
-        // If shuffle is on, randomize the newQueue
-        setActiveQueue(prev => {
-            if (shuffle) {
-                const shuffled = [...prev].sort(() => Math.random() - 0.5);
-                return shuffled;
-            } else return prev;
-        })
+        // Let playSong play from the queue (so that playlists and favorites can be respected)
+        setOriginalQueue(() => {
+            const updatedQueue = [...newQueue];
+            localStorage.setItem('original-queue', JSON.stringify(updatedQueue));
+            return updatedQueue;
+        });
 
         // Set the recently played songs to filter out the song that was already there if the same song is added
-
         setHistory(prev => {
             const updatedHistory = [song, ...prev.filter(s => s.id !== song.id)].slice(0, 10);
             localStorage.setItem('music-history', JSON.stringify(updatedHistory));
@@ -82,6 +86,7 @@ export const AudioProvider = ({ children }) => {
 
     const handleNext = () => {
         let nextIndex;
+        const queue = getPlaybackQueue();
 
         if (shuffle) {
             // if shuffle mode is on, generate a random index that is not the current one
@@ -94,7 +99,7 @@ export const AudioProvider = ({ children }) => {
 
         setCurrentSongIndex(nextIndex);
         playSong(nextIndex);
-        setNowPlaying(activeQueue[nextIndex]);
+        setNowPlaying(queue[nextIndex]);
     }
 
     // This useEffect hook is put here so that the handleNext function can load before using it
@@ -119,6 +124,8 @@ export const AudioProvider = ({ children }) => {
     }, [repeat, shuffle, currentSongIndex])
 
     const handlePrev = () => {
+        const queue = getPlaybackQueue();
+        
         // If more than 3 secs played, restart the current song
         if (audioRef.current.currentTime > 3) audioRef.current.currentTime = 0;
         else {
@@ -126,7 +133,7 @@ export const AudioProvider = ({ children }) => {
 
             setCurrentSongIndex(prevIndex);
             playSong(prevIndex);
-            setNowPlaying(activeQueue[prevIndex]);
+            setNowPlaying(queue[prevIndex]);
         }
     }
 
@@ -162,7 +169,7 @@ export const AudioProvider = ({ children }) => {
                 const otherSongs = prevQueue.filter((_, i) => i !== currentSongIndex);
                 
                 newQueue = [currentSong, ...otherSongs.sort(() => Math.random() - 0.5)];
-                setCurrentSongIndex(0); // The current song is now at index 0
+                setCurrentSongIndex(0);
             } else {
                 // SHUFFLE OFF: Restore the original order from your backup
                 newQueue = [...originalQueue];
@@ -172,7 +179,6 @@ export const AudioProvider = ({ children }) => {
                 setCurrentSongIndex(newIndex);
             }
 
-            // Sync to LocalStorage using the new value directly
             localStorage.setItem('active-queue', JSON.stringify(newQueue));
             localStorage.setItem('shuffle-mode', JSON.stringify(nextShuffleState));
 
@@ -197,7 +203,7 @@ export const AudioProvider = ({ children }) => {
         playSong, togglePlayPause,
         handleNext, handlePrev,
         handleSeek, handleVolChange,
-        toggleRepeat
+        toggleRepeat, getPlaybackQueue,
     }
 
     return (
