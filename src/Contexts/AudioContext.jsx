@@ -9,10 +9,10 @@ const AudioContext = createContext();
 export const AudioProvider = ({ children }) => {
     const [currentSongIndex, setCurrentSongIndex] = useState(() => JSON.parse(localStorage.getItem('current-song-index')) || 0);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [currentTime, setCurrentTime] = useState(0);
-    const [duration, setDuration] = useState(0);
-    const [volume, setVolume] = useState(70);
-    const [repeat, setRepeat] = useState('off');
+    const [currentTime, setCurrentTime] = useState(() => JSON.parse(localStorage.getItem('current-song-time')) || 0);
+    const [duration, setDuration] = useState(() => JSON.parse(localStorage.getItem('current-song-duration')) || 0);
+    const [volume, setVolume] = useState(() => JSON.parse(localStorage.getItem('current-song-volume')) || 70);
+    const [repeat, setRepeat] = useState(() => localStorage.getItem('current-song-repeat') || 'off');
     const [shuffle, setShuffle] = useState(() => JSON.parse(localStorage.getItem('shuffle-mode')) || false);
     const [nowPlaying, setNowPlaying] = useState(songs[currentSongIndex]);
     const audioRef = useRef(null);
@@ -48,8 +48,12 @@ export const AudioProvider = ({ children }) => {
     }, [])
 
     useEffect(() => {
-        localStorage.setItem('current-song-index', JSON.stringify(currentSongIndex))
-    }, [currentSongIndex])
+        localStorage.setItem('current-song-index', JSON.stringify(currentSongIndex));
+        localStorage.setItem('current-song-time', JSON.stringify(currentTime));
+        localStorage.setItem('current-song-duration', Math.floor(duration));
+        localStorage.setItem('current-song-volume', JSON.stringify(volume));
+        localStorage.setItem('current-song-repeat', repeat);
+    }, [currentSongIndex, currentTime, duration, volume, repeat])
 
     const playSong = (index, newQueue = originalQueue ) => {
         const song = newQueue[index];
@@ -91,10 +95,10 @@ export const AudioProvider = ({ children }) => {
         if (shuffle) {
             // if shuffle mode is on, generate a random index that is not the current one
             do {
-                nextIndex = Math.floor(Math.random() * songs.length);
-            } while (nextIndex === currentSongIndex && songs.length > 1);
+                nextIndex = Math.floor(Math.random() * queue.length);
+            } while (nextIndex === currentSongIndex && queue.length > 1);
         } else {
-            nextIndex = currentSongIndex === songs.length - 1 ? 0 : currentSongIndex + 1;
+            nextIndex = currentSongIndex === queue.length - 1 ? 0 : currentSongIndex + 1;
         }
 
         setCurrentSongIndex(nextIndex);
