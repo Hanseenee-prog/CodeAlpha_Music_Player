@@ -6,18 +6,22 @@ import {
 
 import { useAudio } from '../Contexts/AudioContext';
 import songs from '../data/songs';
+import { useNavigate } from 'react-router-dom';
 
 const MiniBar = () => {
     const { 
         currentSongIndex, currentTime,
         handleSeek, isPlaying, togglePlayPause,
         handleNext, handlePrev, volume, handleVolChange,
-        repeat, shuffle, setShuffle, toggleRepeat
+        repeat, shuffle, setShuffle, toggleRepeat,
+        setNowPlaying
     } = useAudio();
+
+    const navigate = useNavigate()
 
     if (!songs[currentSongIndex]) return null;
 
-    const { title, artist, duration } = songs[currentSongIndex];
+    const { title, artist, duration, coverImage } = songs[currentSongIndex];
 
     // Converts time like "5:30" to seconds
     const timeToSec = (time) => {
@@ -34,10 +38,20 @@ const MiniBar = () => {
         handleSeek(newTime);
     }
 
+    const handleClick = () => {
+        navigate('/now-playing');
+        setNowPlaying(songs[currentSongIndex]);
+    }
+
     return (
-        <div className="justify-between sticky bottom-16 md:bottom-0 w-full bg-gray-300 rounded-lg flex items-center">
+        <div 
+            className={`
+                justify-between sticky bottom-16 md:bottom-0 w-full bg-blue-200 rounded-lg flex items-center
+            `}
+            onClick={() => handleClick()}
+        >
             <div className="flex flex-row items-center gap-2 shrink-0 w-40">
-                <img src='../public/image.webp' className='w-10 mx-2' />
+                <img src={coverImage} className='w-10 mx-2' />
 
                 <span className='flex flex-col text-[14px]'>
                     <span className='whitespace-nowrap font-semibold'>{title}</span>
@@ -55,7 +69,8 @@ const MiniBar = () => {
                             min="0" 
                             max={duration}
                             value={progress}
-                            onChange={handleSliderChange} 
+                            onChange={handleSliderChange}
+                            onClick={(e) => e.stopPropagation()}
                             className="mx-2 w-[90%]" 
                         />
                         
@@ -65,7 +80,10 @@ const MiniBar = () => {
                     <div className='w-3/5 flex justify-between'>
                         {/* Shuffle Button */}
                         <button
-                            onClick={() => setShuffle(!shuffle)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setShuffle(!shuffle);
+                            }}
                             className={shuffle ? 'text-blue-600': 'text-gray-600'}    
                         >
                             <ShuffleIcon size={20} />
@@ -73,23 +91,35 @@ const MiniBar = () => {
 
                         {/* SkipBackward Button */}
                         <button
-                            onClick={handlePrev}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handlePrev();
+                            }}
                         ><SkipBack size={20} /></button>
 
                         <button
-                            onClick={togglePlayPause}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                togglePlayPause();
+                            }}
                         >
                             {isPlaying ? <Pause size={28} /> : <Play size={28} />}
                         </button>
 
                         {/* SkipForward Button */}
                         <button
-                            onClick={handleNext}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleNext();
+                            }}
                         ><SkipForward size={20} /></button>
 
                         {/* Repeat Button */}
                         <button
-                            onClick={toggleRepeat}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                toggleRepeat();
+                            }}
                             className={repeat !== 'off' ? 'text-blue-600' : 'text-gray-600'}
                         >
                             {repeat === 'one' ? <Repeat1 size={20} /> : <RepeatIcon size={20} />}
@@ -109,10 +139,12 @@ const MiniBar = () => {
                             max="100"
                             value={volume}
                             onChange={(e) => handleVolChange(e.target.value)}
+                            onClick={(e) => e.stopPropagation()}
                             className="mx-1 w-2/5" 
                         />
                     <Heart 
                         fill='red'
+                        onClick={(e) => e.stopPropagation()}
                     />
                 </div>
 
@@ -126,7 +158,10 @@ const MiniBar = () => {
                 </div>
 
                 <button
-                    onClick={togglePlayPause}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        togglePlayPause();
+                    }}
                     className=''
                 >
                     {isPlaying ? <Pause /> : <Play />}

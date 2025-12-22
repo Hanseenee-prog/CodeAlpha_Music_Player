@@ -6,7 +6,7 @@ const songs = [
         album: 'Journey',
         duration: '0:36',
         audioSrc: '/songs/music-1.mp3',
-        coverImage: '/image.webp'
+        coverImage: '../public/images/image.webp'
     },
     {
         id: 2,
@@ -15,7 +15,7 @@ const songs = [
         album: 'Reflections',
         duration: '0:29',
         audioSrc: '/songs/music-2.mp3',
-        coverImage: '/image.webp'
+        coverImage: '../public/images/image.webp'
     },
     {
         id: 3,
@@ -24,7 +24,7 @@ const songs = [
         album: 'Dreamscapes',
         duration: '0:32',
         audioSrc: '/songs/music-3.mp3',
-        coverImage: '/image.webp'
+        coverImage: '../public/images/image.webp'
     },
     {
         id: 4,
@@ -33,7 +33,7 @@ const songs = [
         album: 'City Lights',
         duration: '0:21',
         audioSrc: '/songs/music-4.mp3',
-        coverImage: '/image.webp'
+        coverImage: '../public/images/image.webp'
     },
     {
         id: 5,
@@ -42,7 +42,7 @@ const songs = [
         album: 'Hurry Up, We\'re Dreaming',
         duration: '0:38',
         audioSrc: '/songs/music-5.mp3',
-        coverImage: '/image.webp'
+        coverImage: '../public/images/image.webp'
     },
     {
         id: 6,
@@ -51,7 +51,7 @@ const songs = [
         album: 'Black Holes and Revelations',
         duration: '0:30',
         audioSrc: '/songs/music-6.mp3',
-        coverImage: '/image.webp'
+        coverImage: '../public/images/image.webp'
     },
     {
         id: 7,
@@ -60,7 +60,7 @@ const songs = [
         album: 'A Rush of Blood to the Head',
         duration: '0:19',
         audioSrc: '/songs/music-7.mp3',
-        coverImage: '/image.webp'
+        coverImage: '../public/images/image.webp'
     }
 ];
 

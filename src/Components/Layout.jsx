@@ -1,10 +1,14 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import SideBar from "./Navigations/SideBar";
 import BottomNavBar from "./Navigations/BottomNavBar";
 import SearchBar from "./SearchBar";
 import MiniBar from "./MiniBar";
 
 const Layout = () => {
+    const location = useLocation();
+    console.log(location);
+    const hideMiniBar = location.pathname === '/now-playing';
+
     return (
         <div className="flex overflow-hidden h-screen bg-gray-200">
             <div className="md:w-15 lg:w-50 shrink-0">
@@ -16,7 +20,7 @@ const Layout = () => {
                     <SearchBar />
                     <Outlet />
                 </div>
-                <MiniBar />
+                {!hideMiniBar && <MiniBar />}
             </main>
             <BottomNavBar />
         </div>

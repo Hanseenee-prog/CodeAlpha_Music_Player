@@ -5,6 +5,7 @@ import Home from './Pages/Home';
 import Favorites from './Pages/Favorites';
 import PlayLists from './Pages/PlayLists';
 import { AudioProvider } from './Contexts/AudioContext';
+import NowPlaying from './Pages/NowPlaying';
 
 function App() {
     return (
@@ -12,6 +13,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Layout />}>
                     <Route index element={<Home />} />
+                    <Route path='now-playing' element={<NowPlaying />} />
                     <Route path="favorites" element={<Favorites />} />
                     <Route path="playlists" element={<PlayLists />} />
                 </Route>

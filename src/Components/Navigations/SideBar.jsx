@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const SideBar = () => {
     return ( 
-        <aside className="w-full h-full bg-transparent hidden md:flex flex-col justify-start">
+        <nav className="w-full h-full bg-transparent hidden md:flex flex-col justify-start">
             <div className="flex items-center justify-center lg:block">
                 <Music2Icon />
                 <h2 className="hidden lg:text-lg font-bold">My Music App</h2>
@@ -35,7 +35,7 @@ const SideBar = () => {
                     <span className="mr-2"><Plus /></span>
                     <span className="hidden lg:block">Add Song</span>
                 </button>
-        </aside>
+        </nav>
     );
 }
  

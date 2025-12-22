@@ -1,5 +1,5 @@
 const Song = ({ song, onPlay }) => {
-    const { title, artist, duration } = song;
+    const { title, artist, duration, coverImage } = song;
     
     return (
         <div 
@@ -8,7 +8,7 @@ const Song = ({ song, onPlay }) => {
         >
             <div className="flex">
                 <img 
-                    src='../public/image.webp'
+                    src={coverImage}
                     alt='song image'
                     className="w-10 mx-2 "
                 />

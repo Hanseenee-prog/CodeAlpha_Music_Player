@@ -15,7 +15,7 @@ const RecentlyPlayed = () => {
                     className="card flex flex-col grow justiify-center items-center"
                 >
                     <img 
-                        src='../public/image.webp' alt='Song image' 
+                        src='../public/images/image.webp' alt='Song image' 
                         className="w-20"
                     />
                     <span>{song.title}</span>

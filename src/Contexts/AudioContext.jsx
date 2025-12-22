@@ -14,6 +14,7 @@ export const AudioProvider = ({ children }) => {
     const [volume, setVolume] = useState(70);
     const [repeat, setRepeat] = useState('off');
     const [shuffle, setShuffle] = useState(false);
+    const [nowPlaying, setNowPlaying] = useState(songs[currentSongIndex]);
     const audioRef = useRef(null);
 
     useEffect(() => {
@@ -128,6 +129,7 @@ export const AudioProvider = ({ children }) => {
         volume, setVolume,
         repeat, setRepeat,
         shuffle, setShuffle,
+        nowPlaying, setNowPlaying,
         
         playSong, togglePlayPause,
         handleNext, handlePrev,
