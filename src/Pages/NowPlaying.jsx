@@ -152,13 +152,13 @@ const NowPlaying = () => {
                 >
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-xl font-black">Up Next</h2>
-                        <button onClick={() => setShowMobileQueue(false)} className="p-2 bg-gray-100 rounded-full">
+                        <button onClick={() => setShowMobileQueue(false)} className="p-2 bg-gray-100 rounded-full active:scale-95 hover:scale-105 cursor-pointer">
                             <X size={20} />
                         </button>
                     </div>
                     <div className="max-h-[60vh] overflow-y-auto space-y-4 pr-2">
                         {songs.slice(0, 10).map((song, idx) => (
-                            <div key={idx} className="flex items-center gap-4 p-2">
+                            <div key={idx} className="flex items-center gap-4 p-2 hover:bg-gray-100 cursor-pointer">
                                 <img src={song.coverImage} className="w-14 h-14 rounded-2xl object-cover shadow-sm" alt="art" />
                                 <div className="flex-1">
                                     <p className="font-bold text-sm">{song.title}</p>

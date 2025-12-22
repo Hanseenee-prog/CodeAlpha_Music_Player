@@ -17,6 +17,10 @@ export const AudioProvider = ({ children }) => {
     const [nowPlaying, setNowPlaying] = useState(songs[currentSongIndex]);
     const audioRef = useRef(null);
 
+    const [originalQueue, setOriginalQueue] = useState(songs); // The source (playlist/library)
+    const [activeQueue, setActiveQueue] = useState(songs);     // The list that respects shuffle
+    const [history, setHistory] = useState(() => JSON.parse(localStorage.getItem('music-history')) || []);               // Recently played
+
     useEffect(() => {
         audioRef.current = new Audio();
         audioRef.current.volume = 0.7; // Initial volume
@@ -38,12 +42,25 @@ export const AudioProvider = ({ children }) => {
         }
     }, [])
 
-    const playSong = (index) => {
-        setCurrentSongIndex(index);
+    const playSong = (index, newQueue = songs ) => {
+        // Let playSong play from the queue (so that playlists and favorites ca be respected)
+        setOriginalQueue(newQueue);
 
+        // If shuffle is on, randomize the newQueue
+        if (shuffle) {
+            const shuffled = [...newQueue].sort(() => Math.random() - 0.5);
+            setActiveQueue(shuffled);
+        } else setActiveQueue(newQueue);
+
+        // Set the recently played songs to filter out the song that was already there if the same song is added
+        const song = newQueue[index];
+        setHistory(prev => [song, ...prev.filter(s => s.id !== song.id)].slice(0, 10));
+        localStorage.setItem('music-history', JSON.stringify(history));
+
+        setCurrentSongIndex(index);
+        setNowPlaying(song)
         audioRef.current.src = songs[index].audioSrc;
         audioRef.current.play();
-
         setIsPlaying(true);
     }
 
@@ -132,6 +149,9 @@ export const AudioProvider = ({ children }) => {
         repeat, setRepeat,
         shuffle, setShuffle,
         nowPlaying, setNowPlaying,
+        originalQueue, setOriginalQueue,
+        activeQueue, setActiveQueue,
+        history, setHistory,
         
         playSong, togglePlayPause,
         handleNext, handlePrev,
