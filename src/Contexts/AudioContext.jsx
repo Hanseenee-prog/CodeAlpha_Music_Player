@@ -68,6 +68,7 @@ export const AudioProvider = ({ children }) => {
 
         setCurrentSongIndex(nextIndex);
         playSong(nextIndex);
+        setNowPlaying(songs[nextIndex]);
     }
 
     // This useEffect hook is put here so that the handleNext function can load before using it
@@ -99,6 +100,7 @@ export const AudioProvider = ({ children }) => {
 
             setCurrentSongIndex(prevIndex);
             playSong(prevIndex);
+            setNowPlaying(songs[prevIndex]);
         }
     }
 

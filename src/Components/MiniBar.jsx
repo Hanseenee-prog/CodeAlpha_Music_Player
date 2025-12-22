@@ -1,174 +1,160 @@
 import { 
     Play, Pause, SkipBack, SkipForward, 
-    Volume1Icon, VolumeX, ShuffleIcon, 
-    RepeatIcon, Repeat1, Heart
+    Volume2, VolumeX, Shuffle, 
+    Repeat, Repeat1, Heart
 } from 'lucide-react';
-
 import { useAudio } from '../Contexts/AudioContext';
 import songs from '../data/songs';
 import { useNavigate } from 'react-router-dom';
 
 const MiniBar = () => {
     const { 
-        currentSongIndex, currentTime,
-        handleSeek, isPlaying, togglePlayPause,
-        handleNext, handlePrev, volume, handleVolChange,
-        repeat, shuffle, setShuffle, toggleRepeat,
+        currentSongIndex, currentTime, handleSeek, isPlaying, 
+        togglePlayPause, handleNext, handlePrev, volume, 
+        handleVolChange, repeat, shuffle, setShuffle, toggleRepeat,
         setNowPlaying
     } = useAudio();
 
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const song = songs[currentSongIndex];
 
-    if (!songs[currentSongIndex]) return null;
+    if (!song) return null;
 
-    const { title, artist, duration, coverImage } = songs[currentSongIndex];
+    const { title, artist, duration, coverImage } = song;
 
-    // Converts time like "5:30" to seconds
     const timeToSec = (time) => {
         const [minutes, seconds] = time.split(":").map(Number);
         return (minutes * 60) + seconds;
-    }                       
+    };
 
-    // Converts the current duration to a percentage value
-    const progress = timeToSec(duration) > 0 ? Math.floor((currentTime / timeToSec(duration)) * 100) : 0;
+    const durationSec = timeToSec(duration);
+    const progress = durationSec > 0 ? (currentTime / durationSec) * 100 : 0;
 
     const handleSliderChange = (e) => {
         const percentage = e.target.value;
-        const newTime = Math.floor((percentage / 100) * timeToSec(duration));
+        const newTime = Math.floor((percentage / 100) * durationSec);
         handleSeek(newTime);
-    }
+    };
 
     const handleClick = () => {
         navigate('/now-playing');
-        setNowPlaying(songs[currentSongIndex]);
-    }
+        setNowPlaying(song);
+    };
 
     return (
         <div 
-            className={`
-                justify-between sticky bottom-16 md:bottom-0 w-full bg-blue-200 rounded-lg flex items-center
-            `}
-            onClick={() => handleClick()}
+            className="fixed bottom-20 md:bottom-6 left-4 md:left-28 lg:left-48 right-4 z-50 
+                       bg-white/80 backdrop-blur-2xl border border-white/40 
+                       shadow-[0_10px_40px_rgba(0,0,0,0.1)] rounded-3xl 
+                       flex items-center justify-between p-4 transition-all 
+                       hover:bg-white/95 cursor-pointer group"
+            onClick={handleClick}
         >
-            <div className="flex flex-row items-center gap-2 shrink-0 w-40">
-                <img src={coverImage} className='w-10 mx-2' />
-
-                <span className='flex flex-col text-[14px]'>
-                    <span className='whitespace-nowrap font-semibold'>{title}</span>
-                    <span>{artist}</span>
-                </span>
-            </div>
-
-            <div className='w-2/5 flex gap-1 h-20 md:h-30 justify-center items-center'>
-                <div className='hidden md:flex flex-col items-center w-4/5'>
-                    <div className='flex flex-row w-full'>
-                        <span className='hidden md:block'>{Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60).toString().padStart(2, '0')}</span>
-                        
-                        <input 
-                            type="range" 
-                            min="0" 
-                            max={duration}
-                            value={progress}
-                            onChange={handleSliderChange}
-                            onClick={(e) => e.stopPropagation()}
-                            className="mx-2 w-[90%]" 
-                        />
-                        
-                        <span className='hidden md:block'>{duration}</span>
-                    </div>
-                    
-                    <div className='w-3/5 flex justify-between'>
-                        {/* Shuffle Button */}
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setShuffle(!shuffle);
-                            }}
-                            className={shuffle ? 'text-blue-600': 'text-gray-600'}    
-                        >
-                            <ShuffleIcon size={20} />
-                        </button>
-
-                        {/* SkipBackward Button */}
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handlePrev();
-                            }}
-                        ><SkipBack size={20} /></button>
-
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                togglePlayPause();
-                            }}
-                        >
-                            {isPlaying ? <Pause size={28} /> : <Play size={28} />}
-                        </button>
-
-                        {/* SkipForward Button */}
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleNext();
-                            }}
-                        ><SkipForward size={20} /></button>
-
-                        {/* Repeat Button */}
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                toggleRepeat();
-                            }}
-                            className={repeat !== 'off' ? 'text-blue-600' : 'text-gray-600'}
-                        >
-                            {repeat === 'one' ? <Repeat1 size={20} /> : <RepeatIcon size={20} />}
-                        </button>
-                    </div>
-                </div>
-            </div>
-          
-            {/* Volume button */}
-            <div className='hidden md:block'>
-                <div className='flex gap-3'>
-                    {volume === '0' ? <VolumeX /> : <Volume1Icon />}
-                    
-                    <input 
-                            type="range" 
-                            min="0" 
-                            max="100"
-                            value={volume}
-                            onChange={(e) => handleVolChange(e.target.value)}
-                            onClick={(e) => e.stopPropagation()}
-                            className="mx-1 w-2/5" 
-                        />
-                    <Heart 
-                        fill='red'
-                        onClick={(e) => e.stopPropagation()}
+            {/* 
+                LARGER CLICKABLE PROGRESS BAR 
+                h-6 hit-area for easier dragging
+            */}
+            <div 
+                className="absolute top-0 left-6 right-6 h-6 -translate-y-1/2 flex items-center z-20"
+                onClick={(e) => e.stopPropagation()}
+            >
+                {/* Visual Track */}
+                <div className="relative w-full h-1.5 bg-gray-200/60 rounded-full overflow-hidden group-hover:h-2 transition-all">
+                    <div 
+                        className="h-full bg-blue-600 rounded-full shadow-[0_0_10px_rgba(37,99,235,0.4)]" 
+                        style={{ width: `${progress}%` }}
                     />
                 </div>
 
-
+                {/* Functional Input (Transparent Layer) */}
+                <input 
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="0.1"
+                    value={progress}
+                    onChange={handleSliderChange}
+                    className="absolute w-full h-full opacity-0 cursor-pointer accent-blue-600"
+                />
             </div>
 
-            {/* Mobile Controls */}
-            <div className='flex flex-row mx-4 gap-2 md:hidden'>
-                <div className=''>
-                    <span>{Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60).toString().padStart(2, '0')}</span> 
+            {/* Song Info Section */}
+            <div className="flex items-center gap-4 w-1/3 min-w-0">
+                <div className="relative">
+                    <img 
+                        src={coverImage} 
+                        className="w-14 h-14 rounded-2xl object-cover shadow-lg transform transition-transform group-hover:scale-105" 
+                        alt="cover" 
+                    />
+                    {isPlaying && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/10 rounded-2xl">
+                           <div className="w-2 h-2 bg-white rounded-full animate-ping" />
+                        </div>
+                    )}
                 </div>
+                <div className="flex flex-col min-w-0">
+                    <span className="font-extrabold text-[15px] text-gray-900 truncate tracking-tight">{title}</span>
+                    <span className="text-xs font-medium text-gray-500 truncate">{artist}</span>
+                </div>
+            </div>
+
+            {/* Controls Section (Center) */}
+            <div className="flex items-center gap-3 md:gap-8 justify-center">
+                <button
+                    onClick={(e) => { e.stopPropagation(); setShuffle(!shuffle); }}
+                    className={`hidden lg:block p-2 rounded-full hover:bg-gray-100 transition-all ${shuffle ? 'text-blue-600' : 'text-gray-400'}`}
+                >
+                    <Shuffle size={20} />
+                </button>
+
+                <button onClick={(e) => { e.stopPropagation(); handlePrev(); }} className="p-2 rounded-full hover:bg-gray-100 hover:scale-110 active:scale-95 transition-all">
+                    <SkipBack size={24} fill="currentColor" />
+                </button>
 
                 <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        togglePlayPause();
-                    }}
-                    className=''
+                    onClick={(e) => { e.stopPropagation(); togglePlayPause(); }}
+                    className="w-12 h-12 flex items-center justify-center bg-blue-600 text-white rounded-full shadow-xl shadow-blue-600/30 hover:scale-110 active:scale-90 transition-all"
                 >
-                    {isPlaying ? <Pause /> : <Play />}
+                    {isPlaying ? <Pause size={24} fill="white" /> : <Play size={24} className="ml-1" fill="white" />}
+                </button>
+
+                <button onClick={(e) => { e.stopPropagation(); handleNext(); }} className="p-2 rounded-full hover:bg-gray-100 hover:scale-110 active:scale-95 transition-all">
+                    <SkipForward size={24} fill="currentColor" />
+                </button>
+
+                <button
+                    onClick={(e) => { e.stopPropagation(); toggleRepeat(); }}
+                    className={`hidden lg:block p-2 rounded-full hover:bg-gray-100 transition-all ${repeat !== 'off' ? 'text-blue-600' : 'text-gray-400'}`}
+                >
+                    {repeat === 'one' ? <Repeat1 size={20} /> : <Repeat size={20} />}
                 </button>
             </div>
+
+            {/* Right Options Section */}
+            <div className="hidden md:flex items-center justify-end gap-6 w-1/3 pr-2">
+                <div className="flex items-center gap-3 px-3 py-1.5 bg-gray-50 rounded-full border border-gray-100">
+                    {volume === '0' ? <VolumeX size={18} className="text-gray-400" /> : <Volume2 size={18} className="text-blue-600" />}
+                    <input 
+                        type="range" min="0" max="100" value={volume}
+                        onChange={(e) => handleVolChange(e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-24 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600" 
+                    />
+                </div>
+                <button onClick={(e) => e.stopPropagation()} className="p-2 hover:bg-red-50 rounded-full transition-colors group/heart">
+                    <Heart className="text-gray-300 group-hover/heart:text-red-500 transition-colors" size={22} />
+                </button>
+            </div>
+
+            {/* Mobile Time */}
+            <div className="md:hidden flex flex-col items-end pr-2">
+                <span className="text-[10px] font-bold text-blue-600/70 uppercase tracking-tighter">Live</span>
+                <span className="text-xs font-black text-gray-800">
+                    {Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60).toString().padStart(2, '0')}
+                </span>
+            </div>
         </div>
-    )
-}
+    );
+};
 
 export default MiniBar;

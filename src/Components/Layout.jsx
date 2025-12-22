@@ -6,23 +6,24 @@ import MiniBar from "./MiniBar";
 
 const Layout = () => {
     const location = useLocation();
-    console.log(location);
     const hideMiniBar = location.pathname === '/now-playing';
 
     return (
-        <div className="flex overflow-hidden h-screen bg-gray-200">
-            <div className="md:w-15 lg:w-50 shrink-0">
+        <div className="flex h-screen w-full bg-gray-50 overflow-hidden">
+            <div className="hidden md:block shrink-0">
                 <SideBar />
             </div>
 
-            <main className="overflow-y-auto gap-4 w-full flex-1 flex flex-col grow">
-                <div className="rounded-2xl bg-gray-100 p-4">
+            <main className="flex-1 flex flex-col min-w-0 relative">
+                <div className="flex-1 overflow-y-auto px-4 md:px-6">
                     <SearchBar />
                     <Outlet />
+                    
+                    {!hideMiniBar && <MiniBar />}
                 </div>
-                {!hideMiniBar && <MiniBar />}
+
+                <BottomNavBar />
             </main>
-            <BottomNavBar />
         </div>
     );
 }
