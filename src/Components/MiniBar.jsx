@@ -4,19 +4,18 @@ import {
     Repeat, Repeat1, Heart
 } from 'lucide-react';
 import { useAudio } from '../Contexts/AudioContext';
-import songs from '../data/songs';
 import { useNavigate } from 'react-router-dom';
 
 const MiniBar = () => {
     const { 
         currentSongIndex, currentTime, handleSeek, isPlaying, 
         togglePlayPause, handleNext, handlePrev, volume, 
-        handleVolChange, repeat, shuffle, setShuffle, toggleRepeat,
-        setNowPlaying
+        handleVolChange, repeat, shuffle, toggleShuffle, toggleRepeat,
+        setNowPlaying, activeQueue
     } = useAudio();
 
     const navigate = useNavigate();
-    const song = songs[currentSongIndex];
+    const song = activeQueue[currentSongIndex];
 
     if (!song) return null;
 
@@ -101,7 +100,7 @@ const MiniBar = () => {
             {/* Controls Section (Center) */}
             <div className="flex items-center gap-3 md:gap-8 justify-center">
                 <button
-                    onClick={(e) => { e.stopPropagation(); setShuffle(!shuffle); }}
+                    onClick={(e) => { e.stopPropagation(); toggleShuffle(!shuffle); }}
                     className={`hidden lg:block p-2 rounded-full hover:bg-gray-100 transition-all ${shuffle ? 'text-blue-600' : 'text-gray-400'}`}
                 >
                     <Shuffle size={20} />

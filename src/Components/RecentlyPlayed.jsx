@@ -1,18 +1,28 @@
 import { Play } from "lucide-react";
 import { useAudio } from "../Contexts/AudioContext";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const RecentlyPlayed = () => {
     const { history, playSong } = useAudio();
+    const scrollRef = useRef(null);
 
     useEffect(() => {
+        if (!scrollRef) return;
 
+        scrollRef.current.scrollTo({
+            left: 0,
+            behavior: 'smooth'
+        })
+        
     }, [history])
 
     return ( 
         <div className="w-full py-4">
             {/* Horizontal Scroll Container */}
-            <div className="flex flex-row gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x px-2">
+            <div 
+                className="flex flex-row gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x px-2"
+                ref={scrollRef}
+            >
                 {history.map((song, index) => (
                     <div 
                         key={song.id}

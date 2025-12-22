@@ -11,7 +11,7 @@ const NowPlaying = () => {
     const { 
         nowPlaying, isPlaying, togglePlayPause, 
         handleNext, handlePrev, currentTime, handleSeek,
-        shuffle, setShuffle, repeat, toggleRepeat 
+        shuffle, setShuffle, repeat, toggleRepeat, activeQueue 
     } = useAudio();
 
     const [showMobileQueue, setShowMobileQueue] = useState(false);
@@ -129,7 +129,7 @@ const NowPlaying = () => {
                 </div>
 
                 <div className="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar">
-                    {songs.slice(0, 8).map((song, idx) => (
+                    {activeQueue.slice(0, 3).map((song, idx) => (
                         <div key={idx} className="group flex items-center gap-4 p-2 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer">
                             <img src={song.coverImage} className="w-12 h-12 rounded-xl object-cover shadow-sm" alt="art" />
                             <div className="flex-1 min-w-0">
