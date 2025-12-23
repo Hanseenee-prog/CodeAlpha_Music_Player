@@ -5,7 +5,7 @@ import { useAudio } from "../Contexts/AudioContext";
 import { Library as LibraryIcon, ListFilter, Shuffle } from "lucide-react";
 import handleSongClick from "../utils/handleSongClick";
 
-const Library = React.memo(() => {
+const Library = () => {
     const { playSong, getPlaybackQueue, currentSongIndex, originalQueue } = useAudio();
     const queue = getPlaybackQueue();
 
@@ -28,7 +28,7 @@ const Library = React.memo(() => {
                         Your Library
                     </h1>
                     <p className="text-xs text-gray-500 font-medium tracking-tight">
-                        {songs.length} Tracks Collected
+                        {originalQueue.length} Tracks Collected
                     </p>
                 </div>
                 
@@ -50,7 +50,7 @@ const Library = React.memo(() => {
 
             {/* Scrollable Song List */}
             <div className="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar">
-                {songs.map((song, index) => (
+                {originalQueue.map((song, index) => (
                     <Song 
                         key={song.id || index} 
                         song={song} 
@@ -61,6 +61,6 @@ const Library = React.memo(() => {
             </div>
         </section>
     );
-});
+}
 
 export default Library;

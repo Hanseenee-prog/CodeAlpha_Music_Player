@@ -10,7 +10,7 @@ export const AudioProvider = ({ children }) => {
     const [currentSongIndex, setCurrentSongIndex] = useState(() => JSON.parse(localStorage.getItem('current-song-index')) || 0);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(() => JSON.parse(localStorage.getItem('current-song-time')) || 0);
-    const [duration, setDuration] = useState(() => JSON.parse(localStorage.getItem('current-song-duration')) || 0);
+    const [duration, setDuration] = useState(0);
     const [volume, setVolume] = useState(() => JSON.parse(localStorage.getItem('current-song-volume')) || 70);
     const [repeat, setRepeat] = useState(() => localStorage.getItem('current-song-repeat') || 'off');
     const [shuffle, setShuffle] = useState(() => JSON.parse(localStorage.getItem('shuffle-mode')) || false);
@@ -23,12 +23,17 @@ export const AudioProvider = ({ children }) => {
 
     const getPlaybackQueue = () => shuffle ? activeQueue : originalQueue;
 
+    // This useEffect is for loading the song that was last played or with currentSongIndex on first mount
+    // Else it won't be able to be played
     useEffect(() => {
         audioRef.current = new Audio();
-        audioRef.current.volume = 0.7; // Initial volume
+        audioRef.current.volume = volume / 100;
 
         const queue = getPlaybackQueue();
-        audioRef.current.src = queue[currentSongIndex].audioSrc // Load the song with currentIndex on first mount
+
+        // Load the song with currentIndex on first mount
+        audioRef.current.src = queue[currentSongIndex].audioSrc; 
+        audioRef.current.currentTime = currentTime;
         setNowPlaying(queue[currentSongIndex]);
 
         const audio = audioRef.current;
@@ -47,24 +52,17 @@ export const AudioProvider = ({ children }) => {
         }
     }, [])
 
+    // This useEffect is for saving to localStorage
     useEffect(() => {
         localStorage.setItem('current-song-index', JSON.stringify(currentSongIndex));
         localStorage.setItem('current-song-time', JSON.stringify(currentTime));
-        localStorage.setItem('current-song-duration', Math.floor(duration));
         localStorage.setItem('current-song-volume', JSON.stringify(volume));
         localStorage.setItem('current-song-repeat', repeat);
-    }, [currentSongIndex, currentTime, duration, volume, repeat])
+    }, [currentSongIndex, currentTime, volume, repeat])
 
     const playSong = (index, newQueue = originalQueue ) => {
         const song = newQueue[index];
         if (!song) return;
-
-        // Let playSong play from the queue (so that playlists and favorites can be respected)
-        setOriginalQueue(() => {
-            const updatedQueue = [...newQueue];
-            localStorage.setItem('original-queue', JSON.stringify(updatedQueue));
-            return updatedQueue;
-        });
 
         // Set the recently played songs to filter out the song that was already there if the same song is added
         setHistory(prev => {
@@ -73,11 +71,11 @@ export const AudioProvider = ({ children }) => {
             
             return updatedHistory;
         });
-
-        setCurrentSongIndex(index);
-        setNowPlaying(song)
+        
         audioRef.current.src = newQueue[index].audioSrc;
         audioRef.current.play();
+        setCurrentSongIndex(index);
+        setNowPlaying(song)
         setIsPlaying(true);
     }
 
@@ -89,20 +87,14 @@ export const AudioProvider = ({ children }) => {
     }
 
     const handleNext = () => {
-        let nextIndex;
         const queue = getPlaybackQueue();
 
-        if (shuffle) {
-            // if shuffle mode is on, generate a random index that is not the current one
-            do {
-                nextIndex = Math.floor(Math.random() * queue.length);
-            } while (nextIndex === currentSongIndex && queue.length > 1);
-        } else {
-            nextIndex = currentSongIndex === queue.length - 1 ? 0 : currentSongIndex + 1;
-        }
+        const nextIndex = (currentSongIndex === queue.length - 1)
+            ? 0
+            : currentSongIndex + 1;
 
+        playSong(nextIndex, queue);
         setCurrentSongIndex(nextIndex);
-        playSong(nextIndex);
         setNowPlaying(queue[nextIndex]);
     }
 

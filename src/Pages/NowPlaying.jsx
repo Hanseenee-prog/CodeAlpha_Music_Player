@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useAudio } from "../Contexts/AudioContext";
-import songs from "../data/songs";
 import { 
     Play, Pause, SkipBack, SkipForward, 
     Shuffle, Repeat, Repeat1, Heart, 
@@ -159,7 +158,7 @@ const NowPlaying = () => {
                         </button>
                     </div>
                     <div className="max-h-[60vh] overflow-y-auto space-y-4 pr-2">
-                        {songs.slice(0, 10).map((song, idx) => (
+                        {queue.slice(0, 10).map((song, idx) => (
                             <div key={idx} className="flex items-center gap-4 p-2 hover:bg-gray-100 cursor-pointer">
                                 <img src={song.coverImage} className="w-14 h-14 rounded-2xl object-cover shadow-sm" alt="art" />
                                 <div className="flex-1">
