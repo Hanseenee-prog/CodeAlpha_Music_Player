@@ -5,17 +5,28 @@ import {
     Shuffle, Repeat, Repeat1, Heart, 
     ListMusic, X
 } from "lucide-react";
+import handleSongClick from '../utils/handleSongClick';
 
 const NowPlaying = () => {
     const { 
-        nowPlaying, isPlaying, togglePlayPause, 
-        handleNext, handlePrev, currentTime, handleSeek,
+        nowPlaying, isPlaying, togglePlayPause, playSong,
+        handleNext, handlePrev, currentTime, handleSeek, currentSongIndex,
         shuffle, toggleShuffle, repeat, toggleRepeat, getPlaybackQueue, 
     } = useAudio();
 
     const [showMobileQueue, setShowMobileQueue] = useState(false);
 
     const queue = getPlaybackQueue();
+
+    // Let the current song always be at the top
+    const upNextQueue = (repeat === 'all') 
+        ? ([
+            queue[currentSongIndex],
+            ...queue.slice(currentSongIndex + 1),
+            ...queue.slice(0, currentSongIndex),
+        ]) : (repeat === 'one')
+           ? ([queue[currentSongIndex]])
+           : []; 
 
     const timeToSec = (time) => {
         if (!time) return 0;
@@ -130,15 +141,28 @@ const NowPlaying = () => {
                 </div>
 
                 <div className="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar">
-                    {queue.slice(0, 8).map((song, idx) => (
-                        <div key={idx} className="group flex items-center gap-4 p-2 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer">
-                            <img src={song.coverImage} className="w-12 h-12 rounded-xl object-cover shadow-sm" alt="art" />
-                            <div className="flex-1 min-w-0">
-                                <p className="font-bold text-sm truncate text-gray-900">{song.title}</p>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">{song.artist}</p>
+                    {(upNextQueue.length > 0) ? (
+                        upNextQueue.slice(0, 8).map((song, idx) => (
+                            <div key={`${song.id}-${idx}`} 
+                                className={`
+                                    group flex items-center gap-4 p-2 rounded-2xl transition-colors cursor-pointer 
+                                    ${(song.id === queue[currentSongIndex].id) ? 'bg-blue-100 hover:bg-blue-200' : 'hover:bg-gray-50'}
+                                    `}
+                                onClick={() => handleSongClick(song, queue, playSong)}
+                            >
+                                <img src={song.coverImage} className="w-12 h-12 rounded-xl object-cover shadow-sm" alt="art" />
+                                <div className="flex-1 min-w-0">
+                                    <p className="font-bold text-sm truncate text-gray-900">{song.title}</p>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">{song.artist}</p>
+                                </div>
                             </div>
+                        ))
+                    ) : (
+                        <div className="text-center text-gray-400 py-8 flex flex-col">
+                            <span className="text-xl font-semibold">Queue is Empty</span>
+                            <span className="text-[16px] mt-1">Enable repeat to loop</span>
                         </div>
-                    ))}
+                    )}
                 </div>
             </aside>
 
@@ -158,15 +182,28 @@ const NowPlaying = () => {
                         </button>
                     </div>
                     <div className="max-h-[60vh] overflow-y-auto space-y-4 pr-2">
-                        {queue.slice(0, 10).map((song, idx) => (
-                            <div key={idx} className="flex items-center gap-4 p-2 hover:bg-gray-100 cursor-pointer">
-                                <img src={song.coverImage} className="w-14 h-14 rounded-2xl object-cover shadow-sm" alt="art" />
-                                <div className="flex-1">
-                                    <p className="font-bold text-sm">{song.title}</p>
-                                    <p className="text-xs text-gray-400 font-bold uppercase">{song.artist}</p>
+                        {(upNextQueue.length > 0) ? (
+                            upNextQueue.slice(0, 10).map((song, idx) => (
+                                <div key={`${song.id}-${idx}`} 
+                                    className={`
+                                        flex items-center gap-4 p-2 hover:bg-gray-100 cursor-pointer
+                                        ${(song.id === queue[currentSongIndex].id) ? 'bg-blue-100 hover:bg-blue-200' : 'hover:bg-gray-50'}
+                                    `}
+                                    onClick={() => handleSongClick(song, queue, playSong)}
+                                >
+                                    <img src={song.coverImage} className="w-14 h-14 rounded-2xl object-cover shadow-sm" alt="art" />
+                                    <div className="flex-1">
+                                        <p className="font-bold text-sm">{song.title}</p>
+                                        <p className="text-xs text-gray-400 font-bold uppercase">{song.artist}</p>
+                                    </div>
                                 </div>
+                            ))
+                        ) : (
+                            <div className="text-center text-gray-400 py-12 flex flex-col">
+                                <span className="text-xl font-semibold">Queue is Empty</span>
+                                <span className="text-[16px] mt-1">Enable repeat to loop</span>
                             </div>
-                        ))}
+                        )}
                     </div>
                 </div>
             </div>
