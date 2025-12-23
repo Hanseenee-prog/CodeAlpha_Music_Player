@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { useAudio } from '../Contexts/AudioContext';
 import { useNavigate } from 'react-router-dom';
+import { useFavsContext } from '../Contexts/FavoritesContext';
 
 const MiniBar = () => {
     const { 
@@ -14,13 +15,15 @@ const MiniBar = () => {
         setNowPlaying, getPlaybackQueue
     } = useAudio();
 
+    const { isFavorite, toggleFavorite } = useFavsContext();
+
     const navigate = useNavigate();
     const queue = getPlaybackQueue();
     const song = queue[currentSongIndex];
 
     if (!song) return null;
 
-    const { title, artist, duration, coverImage } = song;
+    const { id, title, artist, duration, coverImage } = song;
 
     const timeToSec = (time) => {
         const [minutes, seconds] = time.split(":").map(Number);
@@ -50,10 +53,6 @@ const MiniBar = () => {
                        hover:bg-white/95 cursor-pointer group"
             onClick={handleClick}
         >
-            {/* 
-                LARGER CLICKABLE PROGRESS BAR 
-                h-6 hit-area for easier dragging
-            */}
             <div 
                 className="absolute top-0 left-6 right-6 h-6 -translate-y-1/2 flex items-center z-20"
                 onClick={(e) => e.stopPropagation()}
@@ -141,8 +140,12 @@ const MiniBar = () => {
                         className="w-24 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600" 
                     />
                 </div>
-                <button onClick={(e) => e.stopPropagation()} className="p-2 hover:bg-red-50 rounded-full transition-colors group/heart">
-                    <Heart className="text-gray-300 group-hover/heart:text-red-500 transition-colors" size={22} />
+                <button onClick={(e) => { e.stopPropagation(); toggleFavorite(id); }} className="p-2 hover:bg-red-50 rounded-full transition-colors group/heart">
+                    <Heart 
+                        className={`${isFavorite(id) ? 'text-red-500' : 'text-gray-300'} group-hover/heart:text-red-500 transition-colors`} 
+                        size={22} 
+                        fill={isFavorite(id) ? 'red' : 'transparent'} 
+                    />
                 </button>
             </div>
 

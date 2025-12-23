@@ -1,9 +1,11 @@
 import { Play, Heart, Plus, MoreVertical, Pause } from "lucide-react";
 import { useAudio } from "../Contexts/AudioContext";
+import { useFavsContext } from "../Contexts/FavoritesContext";
 
 const Song = ({ song, onPlay }) => {
-    const { title, artist, duration, coverImage } = song;
+    const { id, title, artist, duration, coverImage } = song;
     const { currentSongIndex, isPlaying, getPlaybackQueue } = useAudio();
+    const { isFavorite, toggleFavorite } = useFavsContext();
     
     const queue = getPlaybackQueue();
     const isActive = queue[currentSongIndex].id === song.id;
@@ -46,11 +48,17 @@ const Song = ({ song, onPlay }) => {
                 {/* Actions (Visible on hover/active) */}
                 <div className="flex items-center gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity">
                     <button 
-                        onClick={(e) => { e.stopPropagation(); /* Add Favorite Logic */ }}
-                        className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                        onClick={(e) => { e.stopPropagation(); toggleFavorite(id) }}
+                        className={`
+                            p-2 hover:text-red-500 transition-colors
+                            ${isFavorite(id) ? 'text-red-500' : 'text-gray-400'}
+                        `}
                         title="Add to Favorites"
                     >
-                        <Heart size={18} />
+                        <Heart 
+                            size={18}
+                            fill={isFavorite(id) ? 'red' : 'transparent'} 
+                        />
                     </button>
                     <button 
                         onClick={(e) => { e.stopPropagation(); /* Add to Queue Logic */ }}

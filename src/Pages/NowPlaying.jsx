@@ -6,6 +6,7 @@ import {
     ListMusic, X
 } from "lucide-react";
 import handleSongClick from '../utils/handleSongClick';
+import { useFavsContext } from "../Contexts/FavoritesContext";
 
 const NowPlaying = () => {
     const { 
@@ -13,6 +14,7 @@ const NowPlaying = () => {
         handleNext, handlePrev, currentTime, handleSeek, currentSongIndex,
         shuffle, toggleShuffle, repeat, toggleRepeat, getPlaybackQueue, 
     } = useAudio();
+    const { isFavorite, toggleFavorite } = useFavsContext();
 
     const [showMobileQueue, setShowMobileQueue] = useState(false);
     const scrollDesktopRef = useRef(null);
@@ -28,7 +30,6 @@ const NowPlaying = () => {
             behavior: 'smooth'
         });
 
-        console.log('ran')
     }, [currentSongIndex])
 
     const queue = getPlaybackQueue();
@@ -55,7 +56,7 @@ const NowPlaying = () => {
         </div>
     );
 
-    const { title, artist, duration, coverImage } = nowPlaying;
+    const { id, title, artist, duration, coverImage } = nowPlaying;
     const durationSec = timeToSec(duration);
     const progress = durationSec > 0 ? (currentTime / durationSec) * 100 : 0;
 
@@ -103,8 +104,15 @@ const NowPlaying = () => {
                             </h1>
                             <p className="text-base md:text-lg font-semibold text-blue-600 mt-1">{artist}</p>
                         </div>
-                        <button className="p-3 rounded-full hover:bg-gray-100 text-gray-400 hover:text-red-500 transition-all active:scale-90">
-                            <Heart size={28} /> 
+                        <button 
+                            className="p-3 rounded-full hover:bg-gray-100 hover:text-red-500 transition-all active:scale-90"
+                            onClick={() => toggleFavorite(id)} 
+                        >
+                            <Heart 
+                                size={28} 
+                                fill={isFavorite(id) ? 'red' : 'transparent'}
+                                className={isFavorite(id) ? 'text-red-500' : 'text-gray-400'}
+                            /> 
                         </button>
                     </div>
 
