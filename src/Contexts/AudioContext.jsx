@@ -17,7 +17,8 @@ export const AudioProvider = ({ children }) => {
     const [nowPlaying, setNowPlaying] = useState(songs[currentSongIndex]);
     const audioRef = useRef(null);
 
-    const [originalQueue, setOriginalQueue] = useState(() => JSON.parse(localStorage.getItem('original-queue')) || songs); // The source (playlist/library)
+    const [librarySongs, setLibrarySongs] = useState(songs); // All the songs on the site
+    const [originalQueue, setOriginalQueue] = useState(() => JSON.parse(localStorage.getItem('original-queue')) || songs); // The list that respects mode (playlists or favorites)
     const [activeQueue, setActiveQueue] = useState(() => JSON.parse(localStorage.getItem('active-queue')) || songs); // The list that respects shuffle
     const [history, setHistory] = useState(() => JSON.parse(localStorage.getItem('music-history')) || []); // Recently played
 
@@ -194,6 +195,7 @@ export const AudioProvider = ({ children }) => {
         originalQueue, setOriginalQueue,
         activeQueue, setActiveQueue,
         history, setHistory,
+        librarySongs, setLibrarySongs,
         
         playSong, togglePlayPause,
         handleNext, handlePrev,

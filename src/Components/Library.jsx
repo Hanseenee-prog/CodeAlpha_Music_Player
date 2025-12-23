@@ -1,21 +1,18 @@
 import Song from "./Song";
-import songs from "../data/songs";
-import React from "react";
 import { useAudio } from "../Contexts/AudioContext";
 import { Library as LibraryIcon, ListFilter, Shuffle } from "lucide-react";
 import handleSongClick from "../utils/handleSongClick";
 
 const Library = () => {
-    const { playSong, getPlaybackQueue, currentSongIndex, originalQueue } = useAudio();
-    const queue = getPlaybackQueue();
+    const { playSong, currentSongIndex, librarySongs } = useAudio();
 
     // Randomizes song selection (Optional logic for button)
     const handleShuffle = () => {
         let randomIndex;
         do {
-            randomIndex = Math.floor(Math.random() * songs.length);
-        } while (randomIndex === currentSongIndex && queue.length > 1);
-        playSong(randomIndex, originalQueue);
+            randomIndex = Math.floor(Math.random() * librarySongs.length);
+        } while (randomIndex === currentSongIndex && librarySongs.length > 1);
+        playSong(randomIndex, librarySongs);
     };
 
     return (
@@ -28,7 +25,7 @@ const Library = () => {
                         Your Library
                     </h1>
                     <p className="text-xs text-gray-500 font-medium tracking-tight">
-                        {originalQueue.length} Tracks Collected
+                        {librarySongs.length} Tracks Collected
                     </p>
                 </div>
                 
@@ -50,11 +47,13 @@ const Library = () => {
 
             {/* Scrollable Song List */}
             <div className="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar">
-                {originalQueue.map((song, index) => (
+                {librarySongs.map((song, index) => (
                     <Song 
                         key={song.id || index} 
                         song={song} 
-                        onPlay={() => handleSongClick(song, queue, playSong)}
+                        onPlay={() => {
+                            handleSongClick(song, librarySongs, playSong)
+                        }}
                     />
                 ))}
                 <div className="h-24" />
