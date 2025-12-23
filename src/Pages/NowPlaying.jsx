@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAudio } from "../Contexts/AudioContext";
 import { 
     Play, Pause, SkipBack, SkipForward, 
@@ -15,6 +15,21 @@ const NowPlaying = () => {
     } = useAudio();
 
     const [showMobileQueue, setShowMobileQueue] = useState(false);
+    const scrollDesktopRef = useRef(null);
+    const scrollMobileRef = useRef(null);
+
+    useEffect(() => {
+        const targetRef = scrollDesktopRef.current || scrollMobileRef.current;
+
+        if (!targetRef) return;
+
+        targetRef.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+
+        console.log('ran')
+    }, [currentSongIndex])
 
     const queue = getPlaybackQueue();
 
@@ -80,11 +95,17 @@ const NowPlaying = () => {
 
                 {/* Controls Container */}
                 <div className="w-full max-w-md mx-auto space-y-4 md:space-y-6 pt-4">
-                    <div className="text-center md:text-left">
-                        <h1 className="text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 tracking-tight leading-tight truncate">
-                            {title}
-                        </h1>
-                        <p className="text-base md:text-lg font-semibold text-blue-600 mt-1">{artist}</p>
+                    {/* Title and Favorites Row */}
+                    <div className="flex items-center justify-between gap-4">
+                        <div className="text-left flex-1 min-w-0">
+                            <h1 className="text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 tracking-tight leading-tight truncate">
+                                {title}
+                            </h1>
+                            <p className="text-base md:text-lg font-semibold text-blue-600 mt-1">{artist}</p>
+                        </div>
+                        <button className="p-3 rounded-full hover:bg-gray-100 text-gray-400 hover:text-red-500 transition-all active:scale-90">
+                            <Heart size={28} /> 
+                        </button>
                     </div>
 
                     {/* Progress Bar */}
@@ -140,7 +161,7 @@ const NowPlaying = () => {
                     </h2>
                 </div>
 
-                <div className="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar">
+                <div className="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar" ref={scrollDesktopRef}>
                     {(upNextQueue.length > 0) ? (
                         upNextQueue.slice(0, 8).map((song, idx) => (
                             <div key={`${song.id}-${idx}`} 
@@ -181,7 +202,7 @@ const NowPlaying = () => {
                             <X size={20} />
                         </button>
                     </div>
-                    <div className="max-h-[60vh] overflow-y-auto space-y-4 pr-2">
+                    <div className="max-h-[60vh] overflow-y-auto space-y-4 pr-2" ref={scrollMobileRef}>
                         {(upNextQueue.length > 0) ? (
                             upNextQueue.slice(0, 10).map((song, idx) => (
                                 <div key={`${song.id}-${idx}`} 
