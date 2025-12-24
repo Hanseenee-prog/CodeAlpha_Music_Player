@@ -40,16 +40,21 @@ export const AudioProvider = ({ children }) => {
 
         const audio = audioRef.current;
 
-        audio.addEventListener('loadedmetadata', () => {
-            setDuration(audio.duration);
-        });
+        const handlers = {
+            loadedemetadata: () => setDuration(audio.duration),
+            timeupdate: () => setCurrentTime(audio.currentTime),
+            play: () => setIsPlaying(true),
+            pause: () => setIsPlaying(false),
+        }
 
-        audio.addEventListener('timeupdate', () => {
-            setCurrentTime(audio.currentTime);
+        Object.entries(handlers).forEach(([event, handler]) => {
+            audio.addEventListener(event, handler);
         })
 
         return () => {
-            audio.pause();
+            Object.entries(handlers).forEach(([event, handler]) => {
+                audio.removeEventListener(event, handler);
+            })
             audio.src = '';
         }
     }, [])
@@ -118,10 +123,11 @@ export const AudioProvider = ({ children }) => {
     }
 
     const togglePlayPause = () => {
-        if (isPlaying) audioRef.current.pause();
-        else audioRef.current.play();
+        const audio = audioRef.current;
+        if (!audio) return;
 
-        setIsPlaying(!isPlaying);
+        if (audio.paused) audio.play();
+        else audio.pause();
     }
 
     const handleNext = () => {

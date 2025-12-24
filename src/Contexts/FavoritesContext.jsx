@@ -7,7 +7,7 @@ const FavsContext = createContext();
 
 export const FavsProvider = ({ children }) => {
     const { originalQueue } = useAudio();
-    const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('favorites')) || [{name: "hello", id: '1'}]);
+    const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('favorites')) || []);
 
     const toggleFavorite = (songId) => {
         setFavorites(prev => {
