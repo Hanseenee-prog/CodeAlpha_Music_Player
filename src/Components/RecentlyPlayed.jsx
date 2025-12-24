@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import handleSongClick from "../utils/handleSongClick";
 
 const RecentlyPlayed = () => {
-    const { history, playSong, getPlaybackQueue } = useAudio();
+    const { history, playSong, librarySongs } = useAudio();
     const scrollRef = useRef(null);
 
     useEffect(() => {
@@ -16,8 +16,6 @@ const RecentlyPlayed = () => {
         })
         
     }, [history]);
-
-    const queue = getPlaybackQueue();
 
     return ( 
         <div className="w-full py-4">
@@ -31,7 +29,7 @@ const RecentlyPlayed = () => {
                         <div 
                             key={song.id}
                             className="group flex flex-col items-center min-w-30 md:min-w-35 snap-center cursor-pointer"
-                            onClick={() => handleSongClick(song, queue, playSong)}
+                            onClick={() => handleSongClick(song, librarySongs, playSong)}
                         >
                             {/* Artwork Container with Hover Play Button */}
                             <div className="relative w-28 h-28 md:w-32 md:h-32 mb-3">

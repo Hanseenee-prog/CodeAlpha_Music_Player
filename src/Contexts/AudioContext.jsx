@@ -1,5 +1,6 @@
 import { createContext, useState, useRef, useContext, useEffect } from "react";
 import songs from "../data/songs";
+import shuffleQueue from '../utils/shuffleQueue';
 
 const AudioContext = createContext();
 
@@ -65,6 +66,43 @@ export const AudioProvider = ({ children }) => {
         const song = newQueue[index];
         if (!song) return;
 
+        // Check if we're switching to a different queue
+        const isNewQueue = JSON.stringify(originalQueue) !== JSON.stringify(newQueue);
+
+        setOriginalQueue(newQueue);
+        localStorage.setItem('original-queue', JSON.stringify(newQueue));
+
+        let finalQueue, finalIndex;
+
+        // New queue + shuffle on, shuffle it
+        if (isNewQueue && shuffle) {
+            finalQueue = shuffleQueue(newQueue, index);
+            finalIndex = 0;
+            console.log('New queue + shuffle on, shuffle it ran 1')
+        }
+        // New queue + shuffle off, do not shuffle
+        else if (isNewQueue && !shuffle) {
+            finalQueue = newQueue;
+            finalIndex = index;
+            console.log('New queue + shuffle off, do not shuffle ran 2')
+        } 
+        // Same queue, so do not shuffle, use existing activeQueue
+        else if (!isNewQueue && shuffle) {
+            finalQueue = activeQueue;
+            finalIndex = activeQueue.findIndex(s => s.id === song.id)
+            console.log('Same queue, so do not shuffle, use existing activeQueue ran 3')
+        } 
+        // Same queue + shuffle off, use original
+        else {
+            finalQueue = originalQueue;
+            finalIndex = index;
+            console.log('Same queue + shuffle off, use original ran 4')
+        }
+
+        setActiveQueue(finalQueue);
+        localStorage.setItem('active-queue', JSON.stringify(finalQueue));
+        setCurrentSongIndex(finalIndex);
+
         // Set the recently played songs to filter out the song that was already there if the same song is added
         setHistory(prev => {
             const updatedHistory = [song, ...prev.filter(s => s.id !== song.id)].slice(0, 10);
@@ -73,9 +111,8 @@ export const AudioProvider = ({ children }) => {
             return updatedHistory;
         });
         
-        audioRef.current.src = newQueue[index].audioSrc;
+        audioRef.current.src = finalQueue[finalIndex].audioSrc;
         audioRef.current.play();
-        setCurrentSongIndex(index);
         setNowPlaying(song)
         setIsPlaying(true);
     }
@@ -156,30 +193,23 @@ export const AudioProvider = ({ children }) => {
         const nextShuffleState = !shuffle;
         setShuffle(nextShuffleState);
 
-        setActiveQueue(prevQueue => {
-            let newQueue;
+        let newQueue, newIndex;
 
-            if (nextShuffleState) {
-                // SHUFFLE ON: Create a randomized version of the queue
-                const currentSong = prevQueue[currentSongIndex];
-                const otherSongs = prevQueue.filter((_, i) => i !== currentSongIndex);
-                
-                newQueue = [currentSong, ...otherSongs.sort(() => Math.random() - 0.5)];
-                setCurrentSongIndex(0);
-            } else {
-                // SHUFFLE OFF: Restore the original order
-                newQueue = [...originalQueue];
-                
-                // Re-find the index of the current song in the original order
-                const newIndex = newQueue.findIndex(s => s.id === nowPlaying.id);
-                setCurrentSongIndex(newIndex);
-            }
+        if (nextShuffleState) {
+            newQueue = shuffleQueue(originalQueue, currentSongIndex);
+            newIndex = 0;
+        } 
+        else {
+            newQueue = [...originalQueue];
+            newIndex = newQueue.findIndex(s => s.id === nowPlaying.id);
+        }
 
-            localStorage.setItem('active-queue', JSON.stringify(newQueue));
-            localStorage.setItem('shuffle-mode', JSON.stringify(nextShuffleState));
+        setActiveQueue(newQueue);
+        setCurrentSongIndex(newIndex);
+        localStorage.setItem('active-queue', JSON.stringify(newQueue));
+        localStorage.setItem('shuffle-mode', JSON.stringify(nextShuffleState));
 
-            return newQueue;
-        });
+        return newQueue;
     };
 
     const value = {
