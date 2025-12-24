@@ -8,7 +8,7 @@ const Song = ({ song, onPlay }) => {
     const { isFavorite, toggleFavorite } = useFavsContext();
     
     const queue = getPlaybackQueue();
-    const isActive = queue[currentSongIndex].id === song.id;
+    const isActive = queue[currentSongIndex]?.id === song.id;
 
     return (
         <div 

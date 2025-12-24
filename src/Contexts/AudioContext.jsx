@@ -67,45 +67,52 @@ export const AudioProvider = ({ children }) => {
         localStorage.setItem('current-song-repeat', repeat);
     }, [currentSongIndex, currentTime, volume, repeat])
 
-    const playSong = (index, newQueue = originalQueue ) => {
+    const playSong = (index, newQueue = originalQueue, skipQueueUpdate = false ) => {
         const song = newQueue[index];
         if (!song) return;
 
-        // Check if we're switching to a different queue
-        const isNewQueue = JSON.stringify(originalQueue) !== JSON.stringify(newQueue);
-
-        setOriginalQueue(newQueue);
-        localStorage.setItem('original-queue', JSON.stringify(newQueue));
-
         let finalQueue, finalIndex;
 
-        // New queue + shuffle on, shuffle it
-        if (isNewQueue && shuffle) {
-            finalQueue = shuffleQueue(newQueue, index);
-            finalIndex = 0;
-            console.log('New queue + shuffle on, shuffle it ran 1')
-        }
-        // New queue + shuffle off, do not shuffle
-        else if (isNewQueue && !shuffle) {
-            finalQueue = newQueue;
+        if (skipQueueUpdate) {
+            finalQueue = getPlaybackQueue();
             finalIndex = index;
-            console.log('New queue + shuffle off, do not shuffle ran 2')
         } 
-        // Same queue, so do not shuffle, use existing activeQueue
-        else if (!isNewQueue && shuffle) {
-            finalQueue = activeQueue;
-            finalIndex = activeQueue.findIndex(s => s.id === song.id)
-            console.log('Same queue, so do not shuffle, use existing activeQueue ran 3')
-        } 
-        // Same queue + shuffle off, use original
         else {
-            finalQueue = originalQueue;
-            finalIndex = index;
-            console.log('Same queue + shuffle off, use original ran 4')
-        }
+            // Check if we're switching to a different queue
+            const isNewQueue = JSON.stringify(originalQueue) !== JSON.stringify(newQueue);
 
-        setActiveQueue(finalQueue);
-        localStorage.setItem('active-queue', JSON.stringify(finalQueue));
+            setOriginalQueue(newQueue);
+            localStorage.setItem('original-queue', JSON.stringify(newQueue));
+
+            // New queue + shuffle on, shuffle it
+            if (isNewQueue && shuffle) {
+                finalQueue = shuffleQueue(newQueue, index);
+                finalIndex = 0;
+                console.log('New queue + shuffle on, shuffle it ran 1')
+            }
+            // New queue + shuffle off, do not shuffle
+            else if (isNewQueue && !shuffle) {
+                finalQueue = newQueue;
+                finalIndex = index;
+                console.log('New queue + shuffle off, do not shuffle ran 2')
+            } 
+            // Same queue, so do not shuffle, use existing activeQueue
+            else if (!isNewQueue && shuffle) {
+                finalQueue = activeQueue;
+                finalIndex = activeQueue.findIndex(s => s.id === song.id)
+                console.log('Same queue, so do not shuffle, use existing activeQueue ran 3')
+            } 
+            // Same queue + shuffle off, use original
+            else {
+                finalQueue = originalQueue;
+                finalIndex = index;
+                console.log('Same queue + shuffle off, use original ran 4')
+            }
+
+            setActiveQueue(finalQueue);
+            localStorage.setItem('active-queue', JSON.stringify(finalQueue));
+        }
+        
         setCurrentSongIndex(finalIndex);
 
         // Set the recently played songs to filter out the song that was already there if the same song is added
@@ -137,9 +144,7 @@ export const AudioProvider = ({ children }) => {
             ? 0
             : currentSongIndex + 1;
 
-        playSong(nextIndex, queue);
-        setCurrentSongIndex(nextIndex);
-        setNowPlaying(queue[nextIndex]);
+        playSong(nextIndex, queue, true);
     }
 
     // This useEffect hook is put here so that the handleNext function can load before using it
@@ -171,9 +176,7 @@ export const AudioProvider = ({ children }) => {
         else {
             const prevIndex = currentSongIndex === 0 ? songs.length - 1 : currentSongIndex - 1;
 
-            setCurrentSongIndex(prevIndex);
-            playSong(prevIndex);
-            setNowPlaying(queue[prevIndex]);
+            playSong(prevIndex, queue, true);
         }
     }
 
