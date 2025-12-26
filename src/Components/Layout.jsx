@@ -3,6 +3,7 @@ import SideBar from "./Navigations/SideBar";
 import BottomNavBar from "./Navigations/BottomNavBar";
 import SearchBar from "./SearchBar";
 import MiniBar from "./MiniBar";
+import PlaylistModal from "./PlayListModal";
 
 const Layout = () => {
     const location = useLocation();
@@ -10,6 +11,7 @@ const Layout = () => {
 
     return (
         <div className="flex h-screen w-full bg-gray-50 overflow-hidden">
+            <PlaylistModal />
             <div className="hidden md:block shrink-0">
                 <SideBar />
             </div>

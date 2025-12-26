@@ -1,6 +1,7 @@
 import { Play, Heart, Plus, MoreVertical, Pause } from "lucide-react";
 import { useAudio } from "../Contexts/AudioContext";
 import { useFavsContext } from "../Contexts/FavoritesContext";
+import { usePlaylistContext } from "../Contexts/PlaylistContext";
 
 const Song = ({ song, onPlay }) => {
     const { id, title, artist, duration, coverImage } = song;
@@ -9,6 +10,7 @@ const Song = ({ song, onPlay }) => {
     
     const queue = getPlaybackQueue();
     const isActive = queue[currentSongIndex]?.id === song.id;
+    const { setIsOpenModal } = usePlaylistContext();
 
     return (
         <div 
@@ -61,7 +63,7 @@ const Song = ({ song, onPlay }) => {
                         />
                     </button>
                     <button 
-                        onClick={(e) => { e.stopPropagation(); /* Add to Queue Logic */ }}
+                        onClick={(e) => { e.stopPropagation(); setIsOpenModal(true) }}
                         className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
                         title="Add to Queue"
                     >

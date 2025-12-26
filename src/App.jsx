@@ -8,22 +8,25 @@ import PlayList from './Components/PlayList';
 import LibraryPage from './Pages/LibraryPage';
 import { AudioProvider } from './Contexts/AudioContext';
 import { FavsProvider } from './Contexts/FavoritesContext';
+import { PlaylistProvider } from './Contexts/PlaylistContext';
 import NowPlaying from './Pages/NowPlaying';
 
 function App() {
     return (
         <AudioProvider>
             <FavsProvider> 
-                <Routes>
-                    <Route path="/" element={<Layout />}>
-                        <Route index element={<Home />} />
-                        <Route path='now-playing' element={<NowPlaying />} />
-                        <Route path="library" element={<LibraryPage />} />
-                        <Route path="favorites" element={<Favorites />} />
-                        <Route path="playlists" element={<PlayLists />} />
-                        <Route path="playlists/:id" element={<PlayList />} />
-                    </Route>
-                </Routes>
+                <PlaylistProvider>
+                    <Routes>
+                        <Route path="/" element={<Layout />}>
+                            <Route index element={<Home />} />
+                            <Route path='now-playing' element={<NowPlaying />} />
+                            <Route path="library" element={<LibraryPage />} />
+                            <Route path="favorites" element={<Favorites />} />
+                            <Route path="playlists" element={<PlayLists />} />
+                            <Route path="playlists/:id" element={<PlayList />} />
+                        </Route>
+                    </Routes>
+                </PlaylistProvider>
             </FavsProvider>
         </AudioProvider>
     )
