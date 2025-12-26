@@ -1,9 +1,9 @@
 import { Play, MoreHorizontal, Music2, ArrowLeft, Clock } from 'lucide-react';
 import Song from './Song'; // Your Song component
-import { playLists } from '../data/playlists.js';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAudio } from "../Contexts/AudioContext";
 import handleSongClick from "../utils/handleSongClick";
+import { usePlaylistContext } from '../Contexts/PlaylistContext.jsx';
 
 const PlayList = () => {
     const { id } = useParams();
@@ -11,7 +11,8 @@ const PlayList = () => {
     const { playSong } = useAudio();
     
     // Find the specific playlist
-    const playlist = playLists.find(pl => pl.playlistId === id);
+    const { playlists } = usePlaylistContext();
+    const playlist = playlists.find(pl => pl.playlistId === id);
     
     if (!playlist) {
         return (

@@ -3,7 +3,7 @@ import { usePlaylistContext } from '../Contexts/PlaylistContext';
 import { Plus, ListMusic, ArrowLeft, X } from 'lucide-react';
 
 const PlaylistModal = () => {
-    const { isOpenModal, playlists, setIsOpenModal } = usePlaylistContext();
+    const { isOpenModal, playlists, setIsOpenModal, selectedSong, addToPlaylist } = usePlaylistContext();
     const [view, setView] = useState("select"); 
     
     // New states for input handling
@@ -59,6 +59,7 @@ const PlaylistModal = () => {
                                             <button 
                                                 key={`${pl.name}-${index}`}
                                                 className="w-full flex items-center justify-between p-3 hover:bg-gray-50 rounded-xl transition-colors group"
+                                                onClick={() => { addToPlaylist(pl.playlistId, selectedSong); setIsOpenModal(false) }}
                                             >
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">

@@ -1,11 +1,13 @@
-import { playLists } from '../data/playlists.js';
-import PlaylistCard from '../Components/Navigations/PlayListCard.jsx'; // New dedicated Card component
+import PlaylistCard from '../Components/Navigations/PlayListCard.jsx';
 import { ListMusic, Plus, FolderHeart } from 'lucide-react';
 import { useCallback } from 'react';
+import { usePlaylistContext } from '../Contexts/PlaylistContext.jsx';
 
 const PlayLists = () => {
+    const { playlists } = usePlaylistContext();
+
     const renderPlaylists = useCallback(() => {
-        if (playLists.length === 0) {
+        if (playlists.length === 0) {
             return (
                 <div className="flex flex-col items-center justify-center h-80 text-center p-8">
                     <FolderHeart className="text-gray-200 mb-4" size={56} />
@@ -18,7 +20,7 @@ const PlayLists = () => {
         return (
             /* Responsive Grid: 2 cols mobile, 3 cols tablet, 4-5 cols desktop */
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 p-4 md:p-6">
-                {playLists.map((playlist) => (
+                {playlists.map((playlist) => (
                     <PlaylistCard 
                         key={playlist.playlistId} 
                         playlist={playlist} 
@@ -26,7 +28,7 @@ const PlayLists = () => {
                 ))}
             </div>
         );
-    }, []);
+    }, [playlists]);
 
     return (
         <section className="flex flex-col h-full min-h-125 bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
@@ -38,7 +40,7 @@ const PlayLists = () => {
                         PlayLists
                     </h1>
                     <p className="text-[10px] md:text-xs text-gray-500 font-semibold uppercase tracking-widest mt-1">
-                        {playLists.length} Collections
+                        {playlists.length} Collections
                     </p>
                 </div>
                 

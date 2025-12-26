@@ -10,7 +10,7 @@ const Song = ({ song, onPlay }) => {
     
     const queue = getPlaybackQueue();
     const isActive = queue[currentSongIndex]?.id === song.id;
-    const { setIsOpenModal } = usePlaylistContext();
+    const { setIsOpenModal, setSelectedSong } = usePlaylistContext();
 
     return (
         <div 
@@ -63,7 +63,7 @@ const Song = ({ song, onPlay }) => {
                         />
                     </button>
                     <button 
-                        onClick={(e) => { e.stopPropagation(); setIsOpenModal(true) }}
+                        onClick={(e) => { e.stopPropagation(); setIsOpenModal(true); setSelectedSong(song); }}
                         className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
                         title="Add to Queue"
                     >
