@@ -1,13 +1,17 @@
-import { useState } from "react";
 import { usePlaylistContext } from '../Contexts/PlaylistContext';
 import { Plus, ListMusic, ArrowLeft, X } from 'lucide-react';
 
 const PlaylistModal = () => {
-    const { isOpenModal, playlists, setIsOpenModal, selectedSong, addToPlaylist } = usePlaylistContext();
-    const [view, setView] = useState("select"); 
-    
-    // New states for input handling
-    const [playlistName, setPlaylistName] = useState("");
+    const { 
+        isOpenModal, 
+        playlists, 
+        setIsOpenModal, 
+        selectedSong, 
+        addToPlaylist, addPlaylist,
+        view, setView,
+        playlistName, setPlaylistName 
+    } = usePlaylistContext();
+
     const MAX_LENGTH = 25;
 
     if (!isOpenModal) return null;
@@ -113,6 +117,7 @@ const PlaylistModal = () => {
                                             ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-100' 
                                             : 'bg-gray-100 text-gray-400 shadow-none cursor-not-allowed'
                                         }`}
+                                    onClick={() => { addPlaylist(playlistName, selectedSong); setIsOpenModal(false); }}
                                 >
                                     Create Playlist
                                 </button>

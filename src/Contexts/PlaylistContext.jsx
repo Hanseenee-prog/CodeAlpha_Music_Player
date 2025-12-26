@@ -1,5 +1,6 @@
 import { useContext, createContext, useState } from 'react';
 import { playLists } from '../data/playlists';
+import { generateUniqueID } from '../utils/generateUniqueID';
 
 /* eslint-disable react-refresh/only-export-components */
 const PlaylistContext = createContext()
@@ -8,7 +9,10 @@ export const PlaylistProvider = ({ children }) => {
     const [playlists, setPlaylists] = useState(() => JSON.parse(localStorage.getItem('playlists')) || playLists);
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [selectedSong, setSelectedSong] = useState(null); // song to pass into the add to playlist func or delete func
+    const [view, setView] = useState("select"); 
+    const [playlistName, setPlaylistName] = useState("");
 
+    // Adds a song to an existing playlist
     const addToPlaylist = (playlistId, song) => {
         setPlaylists(prev => {
             const updated = prev.map(pl => {
@@ -28,17 +32,32 @@ export const PlaylistProvider = ({ children }) => {
                 } 
             });
 
-            console.log('added', playlists)
             localStorage.setItem('playlists', JSON.stringify(updated));
             return updated;
         });
     };
 
+    // Creates a new playlist 
+    const addPlaylist = (playlistName, song) => {
+        const newPlaylist = {
+            playlistId: generateUniqueID(),
+            name: playlistName,
+            songs: song ? [song] : [] // If song exists put it
+        }
+
+        setPlaylists(prev => [newPlaylist, ...prev]);
+        setSelectedSong(null);
+        setView('select');
+        localStorage.setItem('playlists', JSON.stringify([newPlaylist, ...playlists]));
+    }
+
     const value = {
         playlists, setPlaylists,
         isOpenModal, setIsOpenModal,
         selectedSong, setSelectedSong,
-        addToPlaylist,
+        view, setView,
+        playlistName, setPlaylistName,
+        addToPlaylist, addPlaylist
     }
 
     return (
