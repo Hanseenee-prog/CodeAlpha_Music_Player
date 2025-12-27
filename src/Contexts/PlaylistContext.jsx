@@ -51,13 +51,41 @@ export const PlaylistProvider = ({ children }) => {
         localStorage.setItem('playlists', JSON.stringify([newPlaylist, ...playlists]));
     }
 
+    const deletePlaylist = (playlistId) => {
+        setPlaylists(prev => {
+            const updated = prev.filter(pl => pl.playlistId !== playlistId);
+
+            localStorage.setItem('playlists', JSON.stringify(updated));
+            return updated;
+        });
+    };
+
+    const editPlaylistName = (playlistId, playlistName) => {
+        setPlaylists(prev => {
+            const updated = prev.map(pl => {
+                if (pl.playlistId !== playlistId) return pl;
+
+                return {
+                    ...pl,
+                    name: playlistName,
+                } 
+            });
+
+            localStorage.setItem('playlists', JSON.stringify(updated));
+            return updated;
+        });
+
+        setPlaylistName("");
+    }
+
     const value = {
         playlists, setPlaylists,
         isOpenModal, setIsOpenModal,
         selectedSong, setSelectedSong,
         view, setView,
         playlistName, setPlaylistName,
-        addToPlaylist, addPlaylist
+        addToPlaylist, addPlaylist,
+        deletePlaylist, editPlaylistName
     }
 
     return (

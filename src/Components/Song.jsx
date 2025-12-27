@@ -65,7 +65,7 @@ const Song = ({ song, onPlay }) => {
                     <button 
                         onClick={(e) => { e.stopPropagation(); setIsOpenModal(true); setSelectedSong(song); }}
                         className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                        title="Add to Queue"
+                        title="Add to playlist"
                     >
                         <Plus size={18} />
                     </button>

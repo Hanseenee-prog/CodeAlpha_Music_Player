@@ -105,7 +105,7 @@ const PlaylistModal = () => {
                             
                             <div className="flex items-center gap-3 pt-4">
                                 <button 
-                                    onClick={() => { setView("select"); setPlaylistName(""); }}
+                                    onClick={() => { setView("select"); setPlaylistName(""); setIsOpenModal(false); }}
                                     className="flex-1 py-3 text-sm font-bold text-gray-500 hover:text-gray-900 transition-colors"
                                 >
                                     Cancel
