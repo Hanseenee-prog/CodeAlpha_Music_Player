@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useFavsContext } from './FavoritesContext';
 import { useAudio } from './AudioContext';
+// import { usePlaylistsContext } from './PlaylistsContext'; // Add when you create it
 
 /* eslint-disable react-refresh/only-export-components */
 
@@ -18,29 +19,67 @@ export const SearchProvider = ({ children }) => {
     const location = useLocation();
     const { librarySongs } = useAudio();
     const { favoriteSongs } = useFavsContext();
+    // const { playlists, getPlaylistById } = usePlaylistsContext(); // Add when ready
 
     // Get the right data source based on current path
     const getSearchSource = () => {
         const path = location.pathname;
         
-        if (path.includes('/favorites')) {
-            return { data: favoriteSongs, context: 'Favorites' };
+        // Favorites page
+        if (path === '/favorites') {
+            return { 
+                data: favoriteSongs, 
+                context: 'Favorites',
+                type: 'songs'
+            };
         }
         
-        if (path.includes('/playlist/')) {
-            // TODO: Get current playlist songs
-            // const playlistId = path.split('/').pop();
-            // const playlist = playlists.find(p => p.id === playlistId);
-            // return { data: playlist?.songs || [], context: playlist?.name || 'Playlist' };
-            return { data: [], context: 'Playlist' };
+        // Individual playlist page: /playlist/:id
+        if (path.startsWith('/playlist/') && path.split('/').length === 3) {
+            const playlistId = path.split('/')[2];
+            // const playlist = getPlaylistById(playlistId);
+            
+            // TODO: Replace with actual playlist data
+            const playlist = { 
+                id: playlistId, 
+                name: 'Workout Mix', 
+                songs: [] 
+            };
+            
+            return { 
+                data: playlist?.songs || [], 
+                context: playlist?.name || 'Playlist',
+                type: 'songs'
+            };
+        }
+        
+        // Playlists overview page: /playlists
+        if (path === '/playlists') {
+            // const allPlaylists = playlists || [];
+            const allPlaylists = []; // TODO: Replace with actual playlists
+            
+            return { 
+                data: allPlaylists, 
+                context: 'Playlists',
+                type: 'playlists' // ← Search playlist names, not songs
+            };
         }
         
         // Default: Library/Home
-        return { data: librarySongs, context: 'Library' };
+        return { 
+            data: librarySongs, 
+            context: 'Library',
+            type: 'songs'
+        };
     };
 
     // Auto-filter results when query or location changes
-    const searchSource = useMemo(() => getSearchSource(), [location.pathname, librarySongs, favoriteSongs]);
+    const searchSource = useMemo(() => getSearchSource(), [
+        location.pathname, 
+        librarySongs, 
+        favoriteSongs
+        // playlists // Add when ready
+    ]);
 
     const runSearch = () => {
         if (!searchQuery.trim()) {
@@ -49,17 +88,26 @@ export const SearchProvider = ({ children }) => {
         }
 
         const lowerCaseQuery = searchQuery.toLowerCase();
-        const { data } = searchSource;
+        const { data, type } = searchSource;
 
-        const filtered = data.filter(item => {
-            const titleMatch = (item.title || '').toLowerCase().includes(lowerCaseQuery);
-            const artistMatch = (item.artist || '').toLowerCase().includes(lowerCaseQuery);
-            const albumMatch = (item.album || '').toLowerCase().includes(lowerCaseQuery);
-            
-            return titleMatch || artistMatch || albumMatch;
-        });
-
-        setSearchResults(filtered);
+        if (type === 'playlists') {
+            // Search playlist NAMES
+            const filtered = data.filter(playlist => {
+                const nameMatch = (playlist.name || '').toLowerCase().includes(lowerCaseQuery);
+                return nameMatch;
+            });
+            setSearchResults(filtered);
+        } else {
+            // Search SONGS (title, artist, album)
+            const filtered = data.filter(song => {
+                const titleMatch = (song.title || '').toLowerCase().includes(lowerCaseQuery);
+                const artistMatch = (song.artist || '').toLowerCase().includes(lowerCaseQuery);
+                const albumMatch = (song.album || '').toLowerCase().includes(lowerCaseQuery);
+                
+                return titleMatch || artistMatch || albumMatch;
+            });
+            setSearchResults(filtered);
+        }
     };
 
     const addRecentSearch = (query) => {
@@ -88,7 +136,7 @@ export const SearchProvider = ({ children }) => {
         setSearchResults,
         isSearchOpen, 
         setIsSearchOpen,
-        searchSource, // Expose current context
+        searchSource,
         clearSearch, 
         runSearch, 
         addRecentSearch    
