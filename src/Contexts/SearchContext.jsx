@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useFavsContext } from './FavoritesContext';
 import { useAudio } from './AudioContext';
-// import { usePlaylistsContext } from './PlaylistsContext'; // Add when you create it
+import { usePlaylistContext } from './PlaylistContext'; 
 
 /* eslint-disable react-refresh/only-export-components */
 
@@ -13,15 +13,14 @@ export const SearchProvider = ({ children }) => {
     const [searchResults, setSearchResults] = useState([]);
     const [recentSearches, setRecentSearches] = useState(() => 
         JSON.parse(localStorage.getItem('recent-searches')) || []
-    );
+    ); 
     const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     const location = useLocation();
     const { librarySongs } = useAudio();
     const { favoriteSongs } = useFavsContext();
-    // const { playlists, getPlaylistById } = usePlaylistsContext(); // Add when ready
+    const { playlists } = usePlaylistContext(); 
 
-    // Get the right data source based on current path
     const getSearchSource = () => {
         const path = location.pathname;
         
@@ -35,16 +34,9 @@ export const SearchProvider = ({ children }) => {
         }
         
         // Individual playlist page: /playlist/:id
-        if (path.startsWith('/playlist/') && path.split('/').length === 3) {
+        if (path.startsWith('/playlists/') && path.split('/').length === 3) {
             const playlistId = path.split('/')[2];
-            // const playlist = getPlaylistById(playlistId);
-            
-            // TODO: Replace with actual playlist data
-            const playlist = { 
-                id: playlistId, 
-                name: 'Workout Mix', 
-                songs: [] 
-            };
+            const playlist = playlists.find(pl => pl.playlistId === playlistId);
             
             return { 
                 data: playlist?.songs || [], 
@@ -55,13 +47,12 @@ export const SearchProvider = ({ children }) => {
         
         // Playlists overview page: /playlists
         if (path === '/playlists') {
-            // const allPlaylists = playlists || [];
-            const allPlaylists = []; // TODO: Replace with actual playlists
+            const allPlaylists = playlists || [];
             
             return { 
                 data: allPlaylists, 
                 context: 'Playlists',
-                type: 'playlists' // ← Search playlist names, not songs
+                type: 'playlists'
             };
         }
         
@@ -73,12 +64,12 @@ export const SearchProvider = ({ children }) => {
         };
     };
 
-    // Auto-filter results when query or location changes
+    /* eslint-disable react-hooks/exhaustive-deps */ 
     const searchSource = useMemo(() => getSearchSource(), [
         location.pathname, 
         librarySongs, 
-        favoriteSongs
-        // playlists // Add when ready
+        favoriteSongs,
+        playlists
     ]);
 
     const runSearch = () => {
@@ -128,14 +119,10 @@ export const SearchProvider = ({ children }) => {
     };
 
     const value = {
-        searchQuery, 
-        setSearchQuery,
-        recentSearches, 
-        setRecentSearches,
-        searchResults, 
-        setSearchResults,
-        isSearchOpen, 
-        setIsSearchOpen,
+        searchQuery, setSearchQuery,
+        recentSearches, setRecentSearches,
+        searchResults, setSearchResults,
+        isSearchOpen, setIsSearchOpen,
         searchSource,
         clearSearch, 
         runSearch, 

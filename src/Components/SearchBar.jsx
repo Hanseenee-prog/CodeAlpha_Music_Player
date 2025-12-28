@@ -5,6 +5,7 @@ import { useAudio } from "../Contexts/AudioContext";
 import { useNavigate } from "react-router-dom";
 import handleSongClick from "../utils/handleSongClick";
 
+/* eslint-disable react-hooks/exhaustive-deps */
 const SearchBar = () => {
     const { 
         searchQuery, setSearchQuery, runSearch, 
@@ -22,15 +23,15 @@ const SearchBar = () => {
         const { context, type } = searchSource;
         
         if (type === 'playlists') {
-            return '🔍 Search playlists...';
+            return 'Search playlists...';
         }
         if (context === 'Favorites') {
-            return '🔍 Search in your favorites...';
+            return 'Search in your favorites...';
         }
         if (context !== 'Library') {
-            return `🔍 Search in ${context}...`;
+            return `Search in ${context}...`;
         }
-        return '🔍 Search songs, artists, albums...';
+        return 'Search songs, artists, albums...';
     };
 
     // Auto-run search when query changes
@@ -55,7 +56,7 @@ const SearchBar = () => {
         
         if (type === 'playlists') {
             // Navigate to playlist detail page
-            navigate(`/playlist/${item.id}`);
+            navigate(`/playlists/${item.playlistId}`);
             addRecentSearch(searchQuery);
             clearSearch();
         } else {
@@ -104,7 +105,7 @@ const SearchBar = () => {
                     <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-xl border border-gray-100 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300 max-h-96 overflow-y-auto">
 
                         {/* Context Badge */}
-                        <div className="px-4 py-2 bg-gradient-to-r from-amber-50 to-orange-50 border-b border-amber-100">
+                        <div className="px-4 py-2 bg-linear-to-r from-amber-50 to-orange-50 border-b border-amber-100">
                             <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest">
                                 Searching in: {searchSource.context} 
                                 {searchSource.type === 'songs' && ` (${searchSource.data.length} songs)`}
@@ -128,7 +129,7 @@ const SearchBar = () => {
                                             {searchSource.type === 'playlists' ? (
                                                 // Playlist Result
                                                 <>
-                                                    <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-blue-400 rounded-lg flex items-center justify-center shrink-0 shadow-sm">
+                                                    <div className="w-12 h-12 bg-linear-to-br from-purple-400 to-blue-400 rounded-lg flex items-center justify-center shrink-0 shadow-sm">
                                                         <Music className="text-white" size={20} />
                                                     </div>
                                                     <div className="flex-1 min-w-0">
@@ -143,7 +144,7 @@ const SearchBar = () => {
                                             ) : (
                                                 // Song Result
                                                 <>
-                                                    <div className="w-12 h-12 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg overflow-hidden shrink-0 shadow-sm">
+                                                    <div className="w-12 h-12 bg-linear-to-br from-gray-200 to-gray-300 rounded-lg overflow-hidden shrink-0 shadow-sm">
                                                         <img 
                                                             src={item.coverImage} 
                                                             className="w-full h-full object-cover group-hover:scale-110 transition-transform" 
