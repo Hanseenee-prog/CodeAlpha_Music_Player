@@ -1,7 +1,8 @@
-import { Search, X, Clock } from "lucide-react";
+import { Search, X, Clock, Music } from "lucide-react";
 import { useSearchContext } from "../Contexts/SearchContext";
 import { useEffect, useRef } from "react";
 import { useAudio } from "../Contexts/AudioContext";
+import { useNavigate } from "react-router-dom";
 import handleSongClick from "../utils/handleSongClick";
 
 const SearchBar = () => {
@@ -13,17 +14,21 @@ const SearchBar = () => {
     } = useSearchContext();
 
     const { playSong } = useAudio();
+    const navigate = useNavigate();
     const dropdownRef = useRef(null);
 
     // Get context-aware placeholder
     const getPlaceholder = () => {
-        const context = searchSource.context;
+        const { context, type } = searchSource;
         
+        if (type === 'playlists') {
+            return '🔍 Search playlists...';
+        }
         if (context === 'Favorites') {
             return '🔍 Search in your favorites...';
         }
-        if (context === 'Playlist') {
-            return '🔍 Search in this playlist...';
+        if (context !== 'Library') {
+            return `🔍 Search in ${context}...`;
         }
         return '🔍 Search songs, artists, albums...';
     };
@@ -45,11 +50,20 @@ const SearchBar = () => {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const handleSongSelect = (song) => {
-        // Play from the current search source context
-        handleSongClick(song, searchSource.data, playSong);
-        addRecentSearch(searchQuery);
-        clearSearch();
+    const handleResultClick = (item) => {
+        const { type } = searchSource;
+        
+        if (type === 'playlists') {
+            // Navigate to playlist detail page
+            navigate(`/playlist/${item.id}`);
+            addRecentSearch(searchQuery);
+            clearSearch();
+        } else {
+            // Play song from current context
+            handleSongClick(item, searchSource.data, playSong);
+            addRecentSearch(searchQuery);
+            clearSearch();
+        }
     };
 
     const handleRecentClick = (query) => {
@@ -92,7 +106,9 @@ const SearchBar = () => {
                         {/* Context Badge */}
                         <div className="px-4 py-2 bg-gradient-to-r from-amber-50 to-orange-50 border-b border-amber-100">
                             <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest">
-                                Searching in: {searchSource.context} ({searchSource.data.length} songs)
+                                Searching in: {searchSource.context} 
+                                {searchSource.type === 'songs' && ` (${searchSource.data.length} songs)`}
+                                {searchSource.type === 'playlists' && ` (${searchSource.data.length} playlists)`}
                             </p>
                         </div>
 
@@ -103,36 +119,56 @@ const SearchBar = () => {
                                     Results
                                 </p>
                                 {searchResults.length > 0 ? (
-                                    searchResults.slice(0, 6).map((song) => (
+                                    searchResults.slice(0, 6).map((item) => (
                                         <div 
-                                            key={song.id} 
-                                            onClick={() => handleSongSelect(song)}
+                                            key={item.id} 
+                                            onClick={() => handleResultClick(item)}
                                             className="flex items-center gap-3 p-2 hover:bg-amber-50 rounded-xl cursor-pointer transition-colors group"
                                         >
-                                            <div className="w-12 h-12 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg overflow-hidden shrink-0 shadow-sm">
-                                                <img 
-                                                    src={song.coverImage} 
-                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform" 
-                                                    alt={song.title} 
-                                                />
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-bold truncate text-gray-900">
-                                                    {song.title}
-                                                </p>
-                                                <p className="text-xs text-gray-500 truncate">
-                                                    {song.artist} {song.album && `• ${song.album}`}
-                                                </p>
-                                            </div>
-                                            <span className="text-xs text-gray-400 font-medium">
-                                                {song.duration}
-                                            </span>
+                                            {searchSource.type === 'playlists' ? (
+                                                // Playlist Result
+                                                <>
+                                                    <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-blue-400 rounded-lg flex items-center justify-center shrink-0 shadow-sm">
+                                                        <Music className="text-white" size={20} />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-sm font-bold truncate text-gray-900">
+                                                            {item.name}
+                                                        </p>
+                                                        <p className="text-xs text-gray-500 truncate">
+                                                            {item.songs?.length || 0} songs
+                                                        </p>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                // Song Result
+                                                <>
+                                                    <div className="w-12 h-12 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg overflow-hidden shrink-0 shadow-sm">
+                                                        <img 
+                                                            src={item.coverImage} 
+                                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform" 
+                                                            alt={item.title} 
+                                                        />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-sm font-bold truncate text-gray-900">
+                                                            {item.title}
+                                                        </p>
+                                                        <p className="text-xs text-gray-500 truncate">
+                                                            {item.artist} {item.album && `• ${item.album}`}
+                                                        </p>
+                                                    </div>
+                                                    <span className="text-xs text-gray-400 font-medium">
+                                                        {item.duration}
+                                                    </span>
+                                                </>
+                                            )}
                                         </div>
                                     ))
                                 ) : (
                                     <div className="px-3 py-8 text-center">
                                         <p className="text-sm text-gray-500 font-medium">
-                                            No results found for "{searchQuery}"
+                                            No {searchSource.type} found for "{searchQuery}"
                                         </p>
                                         <p className="text-xs text-gray-400 mt-1">
                                             Try a different search term
