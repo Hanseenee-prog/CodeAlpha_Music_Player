@@ -35,7 +35,7 @@ const PlayList = () => {
         return (
             <div className="flex flex-col items-center justify-center h-full p-10 text-gray-500">
                 <p>Playlist not found</p>
-                <button onClick={() => navigate(-1)} className="mt-4 text-blue-500 underline">Go Back</button>
+                <button onClick={() => navigate('/playlists')} className="mt-4 text-blue-500 underline">Go Back</button>
             </div>
         );
     }
