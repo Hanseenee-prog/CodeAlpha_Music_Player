@@ -51,7 +51,7 @@ const Library = () => {
                     <Song 
                         key={song.id || index} 
                         song={song} 
-                        onPlay={() => handleSongClick(song, librarySongs, playSong)}
+                        onPlay={() => handleSongClick(song, librarySongs, playSong, 'Library')}
                     />
                 ))}
                 <div className="h-24" />

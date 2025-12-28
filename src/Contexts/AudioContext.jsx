@@ -16,6 +16,7 @@ export const AudioProvider = ({ children }) => {
     const [repeat, setRepeat] = useState(() => localStorage.getItem('current-song-repeat') || 'off');
     const [shuffle, setShuffle] = useState(() => JSON.parse(localStorage.getItem('shuffle-mode')) || false);
     const [nowPlaying, setNowPlaying] = useState(songs[currentSongIndex]);
+    const [queueSource, setQueueSource] = useState(() => localStorage.getItem('queue-source') || 'Library'); // 'library', 'favorites', 'playlist'
     const audioRef = useRef(null);
 
     const [librarySongs, setLibrarySongs] = useState(songs); // All the songs on the site
@@ -67,9 +68,12 @@ export const AudioProvider = ({ children }) => {
         localStorage.setItem('current-song-repeat', repeat);
     }, [currentSongIndex, currentTime, volume, repeat])
 
-    const playSong = (index, newQueue = originalQueue, skipQueueUpdate = false ) => {
+    const playSong = (index, newQueue = originalQueue, source = 'library', skipQueueUpdate = false) => {
         const song = newQueue[index];
         if (!song) return;
+
+        setQueueSource(source);
+        localStorage.setItem('queue-source', source);
 
         let finalQueue, finalIndex;
 
@@ -144,7 +148,7 @@ export const AudioProvider = ({ children }) => {
             ? 0
             : currentSongIndex + 1;
 
-        playSong(nextIndex, queue, true);
+        playSong(nextIndex, queue, queueSource, true);
     }
 
     // This useEffect hook is put here so that the handleNext function can load before using it
@@ -176,7 +180,7 @@ export const AudioProvider = ({ children }) => {
         else {
             const prevIndex = currentSongIndex === 0 ? songs.length - 1 : currentSongIndex - 1;
 
-            playSong(prevIndex, queue, true);
+            playSong(prevIndex, queue, queueSource, true);
         }
     }
 
@@ -235,6 +239,7 @@ export const AudioProvider = ({ children }) => {
         activeQueue, setActiveQueue,
         history, setHistory,
         librarySongs, setLibrarySongs,
+        queueSource, setQueueSource,
         
         playSong, togglePlayPause,
         handleNext, handlePrev,

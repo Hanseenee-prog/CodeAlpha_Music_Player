@@ -22,15 +22,10 @@ const SearchBar = () => {
     const getPlaceholder = () => {
         const { context, type } = searchSource;
         
-        if (type === 'playlists') {
-            return 'Search playlists...';
-        }
-        if (context === 'Favorites') {
-            return 'Search in your favorites...';
-        }
-        if (context !== 'Library') {
-            return `Search in ${context}...`;
-        }
+        if (type === 'playlists')return 'Search playlists...';
+        if (context === 'Favorites') return 'Search in your favorites...';
+        if (context !== 'Library') return `Search in ${context}...`;
+
         return 'Search songs, artists, albums...';
     };
 
@@ -61,7 +56,7 @@ const SearchBar = () => {
             clearSearch();
         } else {
             // Play song from current context
-            handleSongClick(item, searchSource.data, playSong);
+            handleSongClick(item, searchSource.data, playSong, searchSource.context);
             addRecentSearch(searchQuery);
             clearSearch();
         }

@@ -12,7 +12,7 @@ const Favorites = () => {
     const handlePlayAll = () => {
         if (favoriteSongs.length > 0) {
             setRepeat('all')
-            playSong(0, favoriteSongs);
+            playSong(0, favoriteSongs, 'Favorites');
         }
     };
 
@@ -51,7 +51,7 @@ const Favorites = () => {
                             song={song} 
                             // When clicked, it plays from the "Favorites" context
                             onPlay={() => {
-                                handleSongClick(song, favoriteSongs, playSong)
+                                handleSongClick(song, favoriteSongs, playSong, 'Favorites')
                             }}
                         />
                     ))

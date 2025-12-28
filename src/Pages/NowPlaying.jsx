@@ -12,7 +12,7 @@ const NowPlaying = () => {
     const { 
         nowPlaying, isPlaying, togglePlayPause, playSong,
         handleNext, handlePrev, currentTime, handleSeek, currentSongIndex,
-        shuffle, toggleShuffle, repeat, toggleRepeat, getPlaybackQueue, 
+        shuffle, toggleShuffle, repeat, toggleRepeat, getPlaybackQueue, queueSource,
     } = useAudio();
     const { isFavorite, toggleFavorite } = useFavsContext();
 
@@ -162,11 +162,12 @@ const NowPlaying = () => {
 
             {/* Right: Desktop Queue Sidebar */}
             <aside className="hidden lg:flex flex-col w-96 z-20 border-l border-gray-50 p-8">
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex flex-col items-start justify-between mb-8">
                     <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
                         <ListMusic size={22} className="text-blue-600" />
                         Up Next
                     </h2>
+                    <p className="text-sm font-semibold text-gray-500">Playing from {queueSource}</p>
                 </div>
 
                 <div className="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar" ref={scrollDesktopRef}>
@@ -177,7 +178,7 @@ const NowPlaying = () => {
                                     group flex items-center gap-4 p-2 rounded-2xl transition-colors cursor-pointer 
                                     ${(song.id === queue[currentSongIndex].id) ? 'bg-blue-100 hover:bg-blue-200' : 'hover:bg-gray-50'}
                                     `}
-                                onClick={() => handleSongClick(song, queue, playSong)}
+                                onClick={() => handleSongClick(song, queue, playSong, queueSource)}
                             >
                                 <img src={song.coverImage} className="w-12 h-12 rounded-xl object-cover shadow-sm" alt="art" />
                                 <div className="flex-1 min-w-0">
@@ -218,7 +219,7 @@ const NowPlaying = () => {
                                         flex items-center gap-4 p-2 hover:bg-gray-100 cursor-pointer
                                         ${(song.id === queue[currentSongIndex].id) ? 'bg-blue-100 hover:bg-blue-200' : 'hover:bg-gray-50'}
                                     `}
-                                    onClick={() => handleSongClick(song, queue, playSong)}
+                                    onClick={() => handleSongClick(song, queue, playSong, queueSource)}
                                 >
                                     <img src={song.coverImage} className="w-14 h-14 rounded-2xl object-cover shadow-sm" alt="art" />
                                     <div className="flex-1">

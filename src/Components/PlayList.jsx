@@ -1,4 +1,4 @@
-import { useState } from 'react'; // Added useState
+import { useState } from 'react';
 import { Play, MoreHorizontal, Music2, ArrowLeft, Clock, Trash2, Edit2 } from 'lucide-react';
 import Song from './Song';
 import DeleteConfirmModal from './Popovers/DeleteConfirmModal.jsx';
@@ -90,7 +90,7 @@ const PlayList = () => {
                         
                         <div className="flex items-center gap-3 mt-4">
                             <button 
-                                onClick={() => handleSongClick(songs[0], songs, playSong)}
+                                onClick={() => handleSongClick(songs[0], songs, playSong, `"${name}"`)}
                                 className="flex items-center gap-2 px-8 py-3 bg-indigo-600 text-white rounded-full font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
                             >
                                 <Play size={18} fill="white" /> Play All
@@ -145,7 +145,7 @@ const PlayList = () => {
                             key={song.id || index} 
                             song={song} 
 
-                            onPlay={() => handleSongClick(song, songs, playSong)}
+                            onPlay={() => handleSongClick(song, songs, playSong, `"${name}"`)}
                         />
                     ))}
                 </div>

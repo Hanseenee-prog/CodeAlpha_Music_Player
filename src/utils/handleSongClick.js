@@ -1,10 +1,8 @@
-const handleSongClick = (song, array, action) => {
+const handleSongClick = (song, array, action, source) => {
     const index = array.findIndex(s => s.id === song.id);
     if (index !== -1) {
-        action(index, array);
+        action(index, array, source);
     }
-    console.log('found song', array[index]);
-    console.log('from', array)
 }
 
 export default handleSongClick;
