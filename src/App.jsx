@@ -9,6 +9,7 @@ import LibraryPage from './Pages/LibraryPage';
 import { AudioProvider } from './Contexts/AudioContext';
 import { FavsProvider } from './Contexts/FavoritesContext';
 import { PlaylistProvider } from './Contexts/PlaylistContext';
+import { SearchProvider } from './Contexts/SearchContext';
 import NowPlaying from './Pages/NowPlaying';
 
 function App() {
@@ -16,16 +17,18 @@ function App() {
         <AudioProvider>
             <FavsProvider> 
                 <PlaylistProvider>
-                    <Routes>
-                        <Route path="/" element={<Layout />}>
-                            <Route index element={<Home />} />
-                            <Route path='now-playing' element={<NowPlaying />} />
-                            <Route path="library" element={<LibraryPage />} />
-                            <Route path="favorites" element={<Favorites />} />
-                            <Route path="playlists" element={<PlayLists />} />
-                            <Route path="playlists/:id" element={<PlayList />} />
-                        </Route>
-                    </Routes>
+                    <SearchProvider>                
+                        <Routes>
+                            <Route path="/" element={<Layout />}>
+                                <Route index element={<Home />} />
+                                <Route path='now-playing' element={<NowPlaying />} />
+                                <Route path="library" element={<LibraryPage />} />
+                                <Route path="favorites" element={<Favorites />} />
+                                <Route path="playlists" element={<PlayLists />} />
+                                <Route path="playlists/:id" element={<PlayList />} />
+                            </Route>
+                        </Routes>
+                    </SearchProvider>
                 </PlaylistProvider>
             </FavsProvider>
         </AudioProvider>
