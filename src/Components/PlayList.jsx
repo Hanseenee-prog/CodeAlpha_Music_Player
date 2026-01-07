@@ -7,6 +7,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAudio } from "../Contexts/AudioContext";
 import handleSongClick from "../utils/handleSongClick";
 import { usePlaylistContext } from '../Contexts/PlaylistContext.jsx';
+import { useOutletContext } from "react-router-dom";
 
 const PlayList = () => {
     const { id } = useParams();
@@ -15,6 +16,7 @@ const PlayList = () => {
     const [showMenu, setShowMenu] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const { dismissMenu } = useOutletContext();
     
     const { playlists, deletePlaylist, editPlaylistName } = usePlaylistContext();
 
@@ -56,7 +58,10 @@ const PlayList = () => {
                 <h1 className="text-sm font-bold text-gray-900 truncate">Playlist: {name}</h1>
             </div>
 
-            <div className="flex-1 overflow-y-auto custom-scrollbar">
+            <div 
+                className="flex-1 overflow-y-auto custom-scrollbar"
+                onScroll={dismissMenu}
+            >
                 {/* Playlist Info Section */}
                 <div className="p-6 flex flex-col md:flex-row items-center md:items-end gap-6 bg-linear-to-b from-gray-50 to-white">
                     <div className="w-48 h-48 md:w-56 md:h-56 shrink-0 rounded-2xl overflow-hidden shadow-2xl">

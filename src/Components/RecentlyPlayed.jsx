@@ -25,9 +25,9 @@ const RecentlyPlayed = () => {
                 ref={scrollRef}
             >
                 {(history.length > 0) ? (
-                    history.map((song) => (
+                    history.map((song, index) => (
                         <div 
-                            key={song.id}
+                            key={`${song.title}-${song.id}-${index}`}
                             className="group flex flex-col items-center min-w-30 md:min-w-35 snap-center cursor-pointer"
                             onClick={() => handleSongClick(song, librarySongs, playSong)}
                         >

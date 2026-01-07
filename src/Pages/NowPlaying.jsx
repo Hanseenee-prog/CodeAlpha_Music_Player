@@ -206,7 +206,10 @@ const NowPlaying = () => {
                     onClick={e => e.stopPropagation()}
                 >
                     <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-xl font-black">Up Next</h2>
+                        <div className="flex-col flex">
+                            <h2 className="text-xl font-black">Up Next</h2>
+                            <p className="text-sm font-semibold text-gray-500">Playing from {queueSource}</p>
+                        </div>
                         <button onClick={() => setShowMobileQueue(false)} className="p-2 bg-gray-100 rounded-full active:scale-95 hover:scale-105 cursor-pointer">
                             <X size={20} />
                         </button>

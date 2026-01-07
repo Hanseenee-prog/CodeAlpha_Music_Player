@@ -2,9 +2,11 @@ import Song from "./Song";
 import { useAudio } from "../Contexts/AudioContext";
 import { Library as LibraryIcon, ListFilter, Shuffle } from "lucide-react";
 import handleSongClick from "../utils/handleSongClick";
+import { useOutletContext } from "react-router-dom";
 
 const Library = () => {
     const { playSong, currentSongIndex, librarySongs } = useAudio();
+    const { dismissMenu } = useOutletContext();
 
     // Randomizes song selection (Optional logic for button)
     const handleShuffle = () => {
@@ -46,7 +48,10 @@ const Library = () => {
             </div>
 
             {/* Scrollable Song List */}
-            <div className="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar">
+            <div 
+                className="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar"
+                onScroll={dismissMenu}
+            >
                 {librarySongs.map((song, index) => (
                     <Song 
                         key={song.id || index} 

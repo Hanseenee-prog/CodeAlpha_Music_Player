@@ -3,10 +3,12 @@ import { useAudio } from "../Contexts/AudioContext";
 import { Heart, Play, Music } from 'lucide-react';
 import Song from '../Components/Song';
 import handleSongClick from "../utils/handleSongClick";
+import { useOutletContext } from "react-router-dom";
 
 const Favorites = () => {
     const { favoriteSongs } = useFavsContext();
     const { playSong, setRepeat} = useAudio();
+    const { dismissMenu } = useOutletContext();
 
     // Logic to play all the first song in favorites starting from the first
     const handlePlayAll = () => {
@@ -29,7 +31,10 @@ const Favorites = () => {
                     </p>
                 </div>
                 
-                <div className="flex items-center gap-2">
+                <div 
+                    className="flex items-center gap-2"
+                    onScroll={dismissMenu}
+                >
                     {favoriteSongs.length > 0 && (
                         <button 
                             onClick={handlePlayAll}
@@ -49,7 +54,6 @@ const Favorites = () => {
                         <Song 
                             key={song.id || index} 
                             song={song} 
-                            // When clicked, it plays from the "Favorites" context
                             onPlay={() => {
                                 handleSongClick(song, favoriteSongs, playSong, 'Favorites')
                             }}
