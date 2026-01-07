@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Play, MoreHorizontal, Music2, ArrowLeft, Clock, Trash2, Edit2 } from 'lucide-react';
 import Song from './Song';
-import DeleteConfirmModal from './Popovers/DeleteConfirmModal.jsx';
-import PlaylistNameEditor from './Popovers/PlaylistNameEditor.jsx';
+import DeleteConfirmModal from './ModalsOrPopovers/DeleteConfirmModal';
+import PlaylistNameEditor from './ModalsOrPopovers/PlaylistNameEditor';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAudio } from "../Contexts/AudioContext";
 import handleSongClick from "../utils/handleSongClick";

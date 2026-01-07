@@ -4,7 +4,7 @@ import SideBar from "./Navigations/SideBar";
 import BottomNavBar from "./Navigations/BottomNavBar";
 import SearchBar from "./SearchBar";
 import MiniBar from "./MiniBar";
-import PlaylistModal from "./PlayListModal";
+import PlaylistModal from "./ModalsOrPopovers/PlaylistModal";
 
 const Layout = () => {
     const location = useLocation();

@@ -1,4 +1,4 @@
-import { usePlaylistContext } from '../Contexts/PlaylistContext';
+import { usePlaylistContext } from '../../Contexts/PlaylistContext';
 import { Plus, ListMusic, ArrowLeft, X } from 'lucide-react';
 
 const PlaylistModal = () => {

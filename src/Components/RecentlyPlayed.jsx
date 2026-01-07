@@ -59,9 +59,9 @@ const RecentlyPlayed = () => {
                         </div>
                     ))
                     ) : (
-                        <div className="w-full text-center">
+                        <div className="w-full flex flex-col items-center">
                             <span className="text-xl font-semibold text-gray-400">You haven't played any songs yet</span>
-                            <span className="text-sm">Start listening to see your recently played tracks</span>
+                            <span className="text-sm text-gray-500">Start listening to see your recently played tracks</span>
                         </div>
                     )
                 }
