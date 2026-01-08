@@ -19,7 +19,7 @@ export const AudioProvider = ({ children }) => {
     const [queueSource, setQueueSource] = useState(() => localStorage.getItem('queue-source') || 'Library'); // 'library', 'favorites', 'playlist'
     const audioRef = useRef(null);
 
-    const [librarySongs, setLibrarySongs] = useState(songs); // All the songs on the site
+    const [librarySongs, setLibrarySongs] = useState(() => JSON.parse(localStorage.getItem('library-songs')) || songs); // All the songs on the site
     const [originalQueue, setOriginalQueue] = useState(() => JSON.parse(localStorage.getItem('original-queue')) || songs); // The list that respects mode (playlists or favorites)
     const [activeQueue, setActiveQueue] = useState(() => JSON.parse(localStorage.getItem('active-queue')) || songs); // The list that respects shuffle
     const [history, setHistory] = useState(() => JSON.parse(localStorage.getItem('music-history')) || []); // Recently played
@@ -60,13 +60,17 @@ export const AudioProvider = ({ children }) => {
         }
     }, [])
 
-    // This useEffect is for saving to localStorage
+    // This useEffect is for persisting values to localStorage
     useEffect(() => {
         localStorage.setItem('current-song-index', JSON.stringify(currentSongIndex));
         localStorage.setItem('current-song-time', JSON.stringify(currentTime));
         localStorage.setItem('current-song-volume', JSON.stringify(volume));
         localStorage.setItem('current-song-repeat', repeat);
-    }, [currentSongIndex, currentTime, volume, repeat])
+        localStorage.setItem('original-queue', JSON.stringify(originalQueue));
+        localStorage.setItem('active-queue', JSON.stringify(activeQueue));
+        localStorage.setItem('library-songs', JSON.stringify(librarySongs));
+        localStorage.setItem('music-history', JSON.stringify(history));
+    }, [currentSongIndex, currentTime, volume, repeat, originalQueue, activeQueue, librarySongs, history])
 
     const playSong = (index, newQueue = originalQueue, source = 'library', skipQueueUpdate = false) => {
         const song = newQueue[index];
@@ -86,7 +90,6 @@ export const AudioProvider = ({ children }) => {
             const isNewQueue = JSON.stringify(originalQueue) !== JSON.stringify(newQueue);
 
             setOriginalQueue(newQueue);
-            localStorage.setItem('original-queue', JSON.stringify(newQueue));
 
             // New queue + shuffle on, shuffle it
             if (isNewQueue && shuffle) {
@@ -114,18 +117,12 @@ export const AudioProvider = ({ children }) => {
             }
 
             setActiveQueue(finalQueue);
-            localStorage.setItem('active-queue', JSON.stringify(finalQueue));
         }
         
         setCurrentSongIndex(finalIndex);
 
         // Set the recently played songs to filter out the song that was already there if the same song is added
-        setHistory(prev => {
-            const updatedHistory = [song, ...prev.filter(s => s.id !== song.id)].slice(0, 10);
-            localStorage.setItem('music-history', JSON.stringify(updatedHistory));
-            
-            return updatedHistory;
-        });
+        setHistory(prev => [song, ...prev.filter(s => s.id !== song.id)].slice(0, 10));
         
         audioRef.current.src = finalQueue[finalIndex].audioSrc;
         audioRef.current.play();
@@ -167,9 +164,7 @@ export const AudioProvider = ({ children }) => {
         audio.addEventListener('ended', handleSongEnd);
 
         // Cleanup function
-        return () => {
-            audio.removeEventListener('ended', handleSongEnd);
-        }
+        return () => audio.removeEventListener('ended', handleSongEnd);
     }, [repeat, shuffle, currentSongIndex])
 
     const handlePrev = () => {

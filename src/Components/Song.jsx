@@ -12,7 +12,7 @@ const Song = ({ song, onPlay }) => {
     const { setIsOpenModal, setSelectedSong } = usePlaylistContext();
     
     // Dropdown State
-    const { currentMenuId, setCurrentMenuId, dismissMenu } = useOutletContext();
+    const { currentMenuId, setCurrentMenuId, dismissMenu, setIsEditingSong, setCurrentSongToEdit } = useOutletContext();
     const menuRef = useRef(null);
     const buttonRef = useRef(null); // Reference to the MoreVertical button 
 
@@ -104,7 +104,7 @@ const Song = ({ song, onPlay }) => {
                                 ref={menuRef}
                                 className="absolute right-0 top-full mb-2 w-48 bg-white/95 backdrop-blur-xl border border-gray-100 rounded-2xl shadow-2xl z-50 py-2 animate-in fade-in zoom-in-95 duration-200 origin-top-right">
                                 <button 
-                                    onClick={(e) => { e.stopPropagation(); console.log("Edit:", title); setCurrentMenuId(null); }}
+                                    onClick={(e) => { e.stopPropagation(); setIsEditingSong(true); setCurrentSongToEdit(song); setCurrentMenuId(null); }}
                                     className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
                                 >
                                     <Edit2 size={16} /> Edit Details

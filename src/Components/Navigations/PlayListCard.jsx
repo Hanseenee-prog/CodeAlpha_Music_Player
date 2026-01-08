@@ -1,9 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { Play, Music } from 'lucide-react';
+import { usePlaylistContext } from '../../Contexts/PlaylistContext';
 
 const PlaylistCard = ({ playlist }) => {
     const navigate = useNavigate();
-    const { playlistId, name, songs } = playlist;
+    const { playlistId, name } = playlist;
+
+    const { playlistSongs } = usePlaylistContext();
+    const songs = playlistSongs(playlist);
     
     // Use the first song's cover as the playlist artwork
     const coverImage = songs?.[0]?.coverImage;

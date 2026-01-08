@@ -25,7 +25,7 @@ export const FavsProvider = ({ children }) => {
 
     // Get favorite songs
     const favoriteSongs = useMemo(() => {
-        return originalQueue.filter(song => favorites.includes(song.id));
+        return (originalQueue || []).filter(song => favorites.includes((song.id)));
     }, [favorites, originalQueue])
 
     const value = {

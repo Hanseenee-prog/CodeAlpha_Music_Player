@@ -18,9 +18,13 @@ const PlayList = () => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const { dismissMenu } = useOutletContext();
     
-    const { playlists, deletePlaylist, editPlaylistName } = usePlaylistContext();
+    const { playlists, deletePlaylist, editPlaylistName, playlistSongs } = usePlaylistContext();
 
     const playlist = playlists.find(pl => pl.playlistId === id);
+    const songs = playlistSongs(playlist);
+    
+    const { name } = playlist;
+    const displayCover = songs[0]?.coverImage;
 
     const handleSaveName = (newName) => {
         editPlaylistName(playlist.playlistId, newName);
@@ -41,9 +45,6 @@ const PlayList = () => {
             </div>
         );
     }
-
-    const { name, songs } = playlist;
-    const displayCover = songs[0]?.coverImage;
 
     return (
         <section className="flex flex-col h-200 md:h-125 bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">

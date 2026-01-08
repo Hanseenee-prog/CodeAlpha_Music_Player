@@ -5,17 +5,23 @@ import BottomNavBar from "./Navigations/BottomNavBar";
 import SearchBar from "./SearchBar";
 import MiniBar from "./MiniBar";
 import PlaylistModal from "./ModalsOrPopovers/PlaylistModal";
+import EditSongDetails from "./ModalsOrPopovers/EditSongDetails";
 
 const Layout = () => {
     const location = useLocation();
     const hideMiniBar = location.pathname === '/now-playing';
+
     const [currentMenuId, setCurrentMenuId] = useState(null); // Menu for the song component
+    const [isEditingSong, setIsEditingSong] = useState(false);
+    const [currentSongToEdit, setCurrentSongToEdit] = useState(null);
 
     const dismissMenu = () => setCurrentMenuId(null);
 
     return (
         <div className="flex h-screen w-full bg-gray-50 overflow-hidden">
             <PlaylistModal />
+            {isEditingSong && <EditSongDetails currentSongToEdit={currentSongToEdit} setIsEditingSong={setIsEditingSong} />}
+
             <div className="hidden md:block shrink-0">
                 <SideBar />
             </div>
@@ -24,7 +30,7 @@ const Layout = () => {
                 <div className="flex-1 overflow-y-auto px-4 md:px-6">
                     <SearchBar />
                     
-                    <Outlet context={{ currentMenuId, setCurrentMenuId, dismissMenu }} />
+                    <Outlet context={{ currentMenuId, setCurrentMenuId, dismissMenu, setIsEditingSong, setCurrentSongToEdit }} />
 
                     {!hideMiniBar && <MiniBar />}
                 </div>
