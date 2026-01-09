@@ -6,10 +6,10 @@ const PlaylistModal = () => {
         isOpenModal, 
         playlists, 
         setIsOpenModal, 
-        selectedSong, 
+        selectedSong, setSelectedSong,
         addToPlaylist, addPlaylist,
         view, setView,
-        playlistName, setPlaylistName 
+        playlistName, setPlaylistName, 
     } = usePlaylistContext();
 
     const MAX_LENGTH = 25;
@@ -117,7 +117,7 @@ const PlaylistModal = () => {
                                             ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-100' 
                                             : 'bg-gray-100 text-gray-400 shadow-none cursor-not-allowed'
                                         }`}
-                                    onClick={() => { addPlaylist(playlistName, selectedSong); setIsOpenModal(false); }}
+                                    onClick={() => { addPlaylist(playlistName); setIsOpenModal(false); setSelectedSong(null); }}
                                 >
                                     Create Playlist
                                 </button>

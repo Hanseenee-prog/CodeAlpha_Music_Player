@@ -4,7 +4,9 @@ import { useCallback } from 'react';
 import { usePlaylistContext } from '../Contexts/PlaylistContext.jsx';
 
 const PlayLists = () => {
-    const { playlists, setIsOpenModal, setView } = usePlaylistContext();
+    const { playlists, setIsOpenModal, setView, setSelectedSong } = usePlaylistContext();
+
+    console.log(playlists)
 
     const renderPlaylists = useCallback(() => {
         if (playlists.length === 0) {
@@ -46,7 +48,7 @@ const PlayLists = () => {
                 
                 <button 
                     className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-full text-xs font-bold hover:bg-indigo-700 transition-all active:scale-95 shadow-lg shadow-indigo-100"
-                    onClick={() => { setView('create'); setIsOpenModal(true); }}
+                    onClick={() => { setView('create'); setIsOpenModal(true); setSelectedSong(null); }}
                 >
                     <Plus size={18} />
                     <span className="hidden sm:inline">New Playlist</span>

@@ -1,4 +1,4 @@
-import { useContext, createContext, useState, useCallback } from 'react';
+import { useContext, createContext, useState, useCallback, useEffect } from 'react';
 import { generateUniqueID } from '../utils/generateUniqueID';
 import { useAudio } from './AudioContext';
 
@@ -13,6 +13,10 @@ export const PlaylistProvider = ({ children }) => {
     const [view, setView] = useState("select"); 
     const [playlistName, setPlaylistName] = useState("");
     const { librarySongs } = useAudio();
+
+    useEffect(() => {
+        if (!isOpenModal) setPlaylistName("");
+    }, [isOpenModal])
 
     const playlistSongs = useCallback((currentPlaylist) => {
         if (!currentPlaylist) return [];
@@ -45,16 +49,17 @@ export const PlaylistProvider = ({ children }) => {
     };
 
     // Creates a new playlist 
-    const addPlaylist = (playlistName, song) => {
+    const addPlaylist = (playlistName) => {
         const newPlaylist = {
             playlistId: generateUniqueID(),
             name: playlistName,
-            songs: song ? [song.id] : [] // If song exists put it
+            songs: selectedSong ? [selectedSong.id] : [] // If song exists put it
         }
 
         setPlaylists(prev => [newPlaylist, ...prev]);
         setSelectedSong(null);
         setView('select');
+        setPlaylistName("");
         localStorage.setItem('playlists', JSON.stringify([newPlaylist, ...playlists]));
     }
 
@@ -69,9 +74,8 @@ export const PlaylistProvider = ({ children }) => {
 
     const editPlaylistName = (playlistId, playlistName) => {
         setPlaylists(prev => {
-            const updated = prev.map(pl => {
-                pl.playlistId !== playlistId ? { ...pl, name: playlistName } : pl;
-            });
+            const updated = prev.map(pl => pl.playlistId === playlistId ? { ...pl, name: playlistName } : pl);
+            console.log(updated)
 
             localStorage.setItem('playlists', JSON.stringify(updated));
             return updated;
