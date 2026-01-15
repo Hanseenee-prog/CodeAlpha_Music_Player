@@ -6,7 +6,7 @@ const FavsContext = createContext();
 /* eslint-disable react-refresh/only-export-components */
 
 export const FavsProvider = ({ children }) => {
-    const { originalQueue } = useAudio();
+    const { librarySongs } = useAudio();
     const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('favorites')) || []);
 
     const toggleFavorite = (songId) => {
@@ -25,8 +25,8 @@ export const FavsProvider = ({ children }) => {
 
     // Get favorite songs
     const favoriteSongs = useMemo(() => {
-        return (originalQueue || []).filter(song => favorites.includes((song.id)));
-    }, [favorites, originalQueue])
+        return (librarySongs || []).filter(song => favorites.includes((song.id)));
+    }, [favorites, librarySongs])
 
     const value = {
         favorites, setFavorites,

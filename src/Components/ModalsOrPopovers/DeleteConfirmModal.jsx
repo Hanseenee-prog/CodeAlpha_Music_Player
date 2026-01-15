@@ -1,6 +1,6 @@
 import { AlertTriangle, Trash2, X } from 'lucide-react';
 
-const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, playlistName }) => {
+const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, playlistName, songName }) => {
     if (!isOpen) return null;
 
     return (
@@ -16,19 +16,19 @@ const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, playlistName }) => {
                     </div>
                     
                     <div>
-                        <h2 className="text-xl font-black text-gray-900 leading-tight">Delete Playlist?</h2>
+                        <h2 className="text-xl font-black text-gray-900 leading-tight">Delete {playlistName ? 'Playlist' : 'song'}?</h2>
                         <p className="text-sm text-gray-500 mt-2">
-                            This will permanently remove <span className="font-bold text-gray-900">"{playlistName}"</span>. This action cannot be undone.
+                            This will permanently remove <span className="font-bold text-gray-900">"{playlistName || songName}"</span>. This action cannot be undone.
                         </p>
                     </div>
                 </div>
 
                 <div className="flex flex-col gap-2 mt-8">
                     <button 
-                        onClick={onConfirm}
+                        onClick={(e) => { e.stopPropagation(); onConfirm(); }}
                         className="w-full py-4 bg-red-500 hover:bg-red-600 text-white rounded-2xl font-black shadow-lg shadow-red-100 transition-all active:scale-95"
                     >
-                        Yes, Delete Playlist
+                        Yes, Delete {playlistName ? 'Playlist' : 'song'}
                     </button>
                     <button 
                         onClick={onClose}

@@ -5,7 +5,6 @@ import { useAudio } from '../../Contexts/AudioContext';
 const EditSongDetails = ({ currentSongToEdit, setIsEditingSong }) => {
     const { setOriginalQueue, setActiveQueue, setLibrarySongs, setHistory } = useAudio();
 
-
     // Local state for form handling
     const [formData, setFormData] = useState({
         id: currentSongToEdit?.id || null,

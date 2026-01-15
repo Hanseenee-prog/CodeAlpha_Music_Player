@@ -3,16 +3,31 @@ import { useAudio } from "../Contexts/AudioContext";
 import { useFavsContext } from "../Contexts/FavoritesContext";
 import { usePlaylistContext } from "../Contexts/PlaylistContext";
 import { useOutletContext } from "react-router-dom";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
+import DeleteConfirmModal from "./ModalsOrPopovers/DeleteConfirmModal";
 
 const Song = ({ song, onPlay }) => {
     const { id, title, artist, duration, coverImage } = song;
-    const { currentSongIndex, isPlaying, getPlaybackQueue } = useAudio();
+    const { 
+        currentSongIndex, 
+        isPlaying, 
+        getPlaybackQueue,
+        deleteSong,
+    } = useAudio();
+
     const { isFavorite, toggleFavorite } = useFavsContext();
     const { setIsOpenModal, setSelectedSong } = usePlaylistContext();
+    const [isDeleteSongModalOpen, setIsDeleteSongModalOpen] = useState(false);
     
     // Dropdown State
-    const { currentMenuId, setCurrentMenuId, dismissMenu, setIsEditingSong, setCurrentSongToEdit } = useOutletContext();
+    const { 
+        currentMenuId, 
+        setCurrentMenuId, 
+        dismissMenu, 
+        setIsEditingSong, 
+        setCurrentSongToEdit,
+    } = useOutletContext();
+
     const menuRef = useRef(null);
     const buttonRef = useRef(null); // Reference to the MoreVertical button 
 
@@ -120,7 +135,7 @@ const Song = ({ song, onPlay }) => {
                                 <div className="h-px bg-gray-100 my-1 mx-2" />
 
                                 <button 
-                                    onClick={(e) => { e.stopPropagation(); console.log("Delete:", id); setCurrentMenuId(null); }}
+                                    onClick={(e) => { e.stopPropagation(); setIsDeleteSongModalOpen(true); setCurrentMenuId(null); }}
                                     className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
                                 >
                                     <Trash2 size={16} /> Delete Song
@@ -134,6 +149,13 @@ const Song = ({ song, onPlay }) => {
                     {duration}
                 </span>
             </div>
+
+            <DeleteConfirmModal 
+                isOpen={isDeleteSongModalOpen}
+                songName={title}
+                onClose={() => setIsDeleteSongModalOpen(false)}
+                onConfirm={() => { deleteSong(id); setIsDeleteSongModalOpen(false); }}
+            />
         </div>
     );
 };

@@ -6,8 +6,6 @@ import { usePlaylistContext } from '../Contexts/PlaylistContext.jsx';
 const PlayLists = () => {
     const { playlists, setIsOpenModal, setView, setSelectedSong } = usePlaylistContext();
 
-    console.log(playlists)
-
     const renderPlaylists = useCallback(() => {
         if (playlists.length === 0) {
             return (

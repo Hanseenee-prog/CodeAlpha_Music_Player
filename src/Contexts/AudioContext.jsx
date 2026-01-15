@@ -72,7 +72,7 @@ export const AudioProvider = ({ children }) => {
         localStorage.setItem('music-history', JSON.stringify(history));
     }, [currentSongIndex, currentTime, volume, repeat, originalQueue, activeQueue, librarySongs, history])
 
-    const playSong = (index, newQueue = originalQueue, source = 'library', skipQueueUpdate = false) => {
+    const playSong = (index, newQueue = originalQueue, source = 'library', skipQueueUpdate = false, shouldAutoPlay = true) => {
         const song = newQueue[index];
         if (!song) return;
 
@@ -125,9 +125,16 @@ export const AudioProvider = ({ children }) => {
         setHistory(prev => [song, ...prev.filter(s => s.id !== song.id)].slice(0, 10));
         
         audioRef.current.src = finalQueue[finalIndex].audioSrc;
-        audioRef.current.play();
         setNowPlaying(song)
-        setIsPlaying(true);
+
+        if (shouldAutoPlay) {
+            audioRef.current.play();
+            setIsPlaying(true);
+        } else {
+            setIsPlaying(false);
+            // We load the new song so the UI updates, but we don't play it
+            audioRef.current.load();
+        }
     }
 
     const togglePlayPause = () => {
@@ -140,6 +147,7 @@ export const AudioProvider = ({ children }) => {
 
     const handleNext = () => {
         const queue = getPlaybackQueue();
+        if (queue.length === 0) return;
 
         const nextIndex = (currentSongIndex === queue.length - 1)
             ? 0
@@ -220,12 +228,41 @@ export const AudioProvider = ({ children }) => {
         return newQueue;
     };
 
+    const deleteSong = (songId) => {
+        const wasCurrent = nowPlaying?.id === songId;
+        const wasPlaying = isPlaying; 
+
+        setLibrarySongs(prev => prev.filter(s => s.id !== songId));
+        setOriginalQueue(prev => prev.filter(s => s.id !== songId));
+        setActiveQueue(prev => prev.filter(s => s.id !== songId));
+
+        // If we deleted a song that wasn't playing, stop here.
+        if (!wasCurrent) return;
+
+        // Create the local updated queue (Synchronous, not waiting for State)
+        const currentQueue = getPlaybackQueue();
+        const updatedQueue = currentQueue.filter(s => s.id !== songId);
+
+        if (updatedQueue.length > 0) {
+            let nextIndex = currentSongIndex;
+            if (nextIndex >= updatedQueue.length) nextIndex = 0;
+
+            playSong(nextIndex, updatedQueue, queueSource, false, wasPlaying);
+        } else {
+            // Queue is empty
+            audioRef.current.pause();
+            audioRef.current.src = '';
+            setNowPlaying(null);
+            setIsPlaying(false);
+        }
+    };
+
     const value = {
         currentSongIndex, setCurrentSongIndex,
         isPlaying, setIsPlaying,
         currentTime, setCurrentTime,
         duration, setDuration,
-        audioRef,
+        audioRef, deleteSong,
         volume, setVolume,
         repeat, setRepeat,
         shuffle, toggleShuffle,
