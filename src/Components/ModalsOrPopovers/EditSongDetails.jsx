@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { X, Music, User, Image as ImageIcon, Save, Check } from 'lucide-react';
 import { useAudio } from '../../Contexts/AudioContext';
+import { useSongCover } from '../../Hooks/useSongCover';
 
 const EditSongDetails = ({ currentSongToEdit, setIsEditingSong }) => {
     const { setOriginalQueue, setActiveQueue, setLibrarySongs, setHistory } = useAudio();
+    const { coverSrc, handleNewImage } = useSongCover(currentSongToEdit?.id);
+    const fileRef = useRef(null);
 
     // Local state for form handling
     const [formData, setFormData] = useState({
@@ -12,6 +15,12 @@ const EditSongDetails = ({ currentSongToEdit, setIsEditingSong }) => {
         artist: currentSongToEdit?.artist || "",
         coverImage: currentSongToEdit?.coverImage || ""
     });
+
+    // useEffect to cleanup memory
+    useEffect(() => {
+        console.log(typeof formData?.coverImage)
+        if (formData?.coverImage.startsWith("blob:")) URL.revokeObjectURL(formData.coverImage);
+    }, [formData.coverImage])
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -57,7 +66,10 @@ const EditSongDetails = ({ currentSongToEdit, setIsEditingSong }) => {
                     
                     {/* Cover Image Preview/Input */}
                     <div className="flex flex-col items-center gap-4">
-                        <div className="relative group w-32 h-32 rounded-2xl overflow-hidden shadow-lg border-4 border-white bg-gray-100">
+                        <div 
+                            className="relative group w-32 h-32 rounded-2xl overflow-hidden shadow-lg border-4 border-white bg-gray-100"
+                            onClick={() => fileRef.current.click()}
+                        >
                             <img 
                                 src={formData.coverImage || "/api/placeholder/128/128"} 
                                 alt="Preview" 
@@ -67,6 +79,15 @@ const EditSongDetails = ({ currentSongToEdit, setIsEditingSong }) => {
                                 <ImageIcon className="text-white" size={24} />
                             </div>
                         </div>
+
+                        <input 
+                            type="file"
+                            ref={fileRef}
+                            accept="image/*"
+                            hidden
+                            onChange={(e) => handleNewImage(e.target.files[0])}
+                        />
+
                         <input 
                             type="text" 
                             name="coverImage"

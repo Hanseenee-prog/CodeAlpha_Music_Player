@@ -5,6 +5,7 @@ import { usePlaylistContext } from "../Contexts/PlaylistContext";
 import { useOutletContext } from "react-router-dom";
 import { useRef, useEffect, useState } from "react";
 import DeleteConfirmModal from "./ModalsOrPopovers/DeleteConfirmModal";
+import { useSongCover } from "../Hooks/useSongCover";
 
 const Song = ({ song, onPlay }) => {
     const { id, title, artist, duration, coverImage } = song;
@@ -14,6 +15,7 @@ const Song = ({ song, onPlay }) => {
         getPlaybackQueue,
         deleteSong,
     } = useAudio();
+    const { coverSrc } = useSongCover(id, coverImage);
 
     const { isFavorite, toggleFavorite } = useFavsContext();
     const { setIsOpenModal, setSelectedSong } = usePlaylistContext();
@@ -61,7 +63,7 @@ const Song = ({ song, onPlay }) => {
             <div className="flex items-center gap-4 min-w-0">
                 <div className="relative shrink-0 w-12 h-12 rounded-lg overflow-hidden shadow-sm">
                     <img 
-                        src={coverImage} 
+                        src={coverSrc} 
                         className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 
                             ${isActive && isPlaying ? 'brightness-50' : ''}`}
                         alt={title} 
