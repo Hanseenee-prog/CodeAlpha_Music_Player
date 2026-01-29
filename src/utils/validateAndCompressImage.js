@@ -2,7 +2,8 @@ export const validateImage = (file, maxSize = 3_000_000) => {
     console.log('validating')
     if (!file) return "No file selected";
     if (!file.type.startsWith("image/")) return "File must be an image";
-    if (file.size > maxSize) "Image should not be larger than 3MB";
+    // Added "return" keyword before the error message
+    if (file.size > maxSize) return "Image should not be larger than 3MB";
 
     return null;
 }
@@ -35,9 +36,9 @@ export const compressImage = async (file, {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
 
-    // Set dimensions to match the bitmap
-    canvas.width = bitmap.width;
-    canvas.height = bitmap.height;
+    // Set dimensions to the SCALED width/height, not the original bitmap dimensions
+    canvas.width = width;
+    canvas.height = height;
 
     // Draw the bitmap onto the canvas
     ctx.drawImage(bitmap, 0, 0, width, height);

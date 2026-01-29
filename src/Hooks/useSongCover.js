@@ -11,16 +11,20 @@ import { fileToBase64 } from "../utils/fileTobase64";
 export const useSongCover = (songId, fallbackCover) => {
     const [coverSrc, setCoverSrc] = useState(fallbackCover);
     const [error, setError] = useState(null);
-    const objectURLRef = useRef(null); // Hold the current object url
+    const objectURLRef = useRef(null);
 
     useEffect(() => {
         let active = true;
 
         const loadCover = async () => {
-            const base64 = await get(`song-cover-${songId}`);
+            try {
+                const base64 = await get(`song-cover-${songId}`);
 
-            if (!base64 || active) return;
-            setCoverSrc(base64);
+                if (!base64 || !active) return;
+                setCoverSrc(base64);
+            } catch (err) {
+                console.error("Error loading cover:", err);
+            }
         }
         loadCover();
 
@@ -33,8 +37,10 @@ export const useSongCover = (songId, fallbackCover) => {
         }
     }, [songId, fallbackCover])
     
-    //  Takes a new image, compresses it and saves it to base64
+    // Takes a new image, compresses it and saves it to base64
     const handleNewImage = async (file) => {
+        if (!file) return;
+
         const validationError = validateImage(file);
         if (validationError) {
             setError(validationError);
@@ -42,18 +48,25 @@ export const useSongCover = (songId, fallbackCover) => {
         }
         setError(null);
 
-        const compressedBlob = await compressImage(file);
+        try {
+            const compressedBlob = await compressImage(file);
 
-        // Preview using objectURL
-        const objectURL = URL.createObjectURL(compressedBlob);
-        if (objectURLRef.current) URL.revokeObjectURL(objectURLRef.current);
+            // Preview using objectURL
+            const objectURL = URL.createObjectURL(compressedBlob);
+            if (objectURLRef.current) {
+                URL.revokeObjectURL(objectURLRef.current);
+            }
 
-        objectURLRef.current = objectURL;
-        setCoverSrc(objectURL);
+            objectURLRef.current = objectURL;
+            setCoverSrc(objectURL);
 
-        // Save as base64
-        const base64 = await fileToBase64(compressedBlob);
-        await set(`song-cover-${songId}`, base64);
+            // Save as base64
+            const base64 = await fileToBase64(compressedBlob);
+            await set(`song-cover-${songId}`, base64);
+        } catch (err) {
+            console.error("Error handling new image:", err);
+            setError("Failed to process image");
+        }
     }
 
     const removeCover = async () => {

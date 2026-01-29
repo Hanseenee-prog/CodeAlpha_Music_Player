@@ -9,12 +9,14 @@ import { useSongCover } from "../Hooks/useSongCover";
 
 const Song = ({ song, onPlay }) => {
     const { id, title, artist, duration, coverImage } = song;
+    
     const { 
         currentSongIndex, 
         isPlaying, 
         getPlaybackQueue,
         deleteSong,
     } = useAudio();
+    
     const { coverSrc } = useSongCover(id, coverImage);
 
     const { isFavorite, toggleFavorite } = useFavsContext();
@@ -31,7 +33,7 @@ const Song = ({ song, onPlay }) => {
     } = useOutletContext();
 
     const menuRef = useRef(null);
-    const buttonRef = useRef(null); // Reference to the MoreVertical button 
+    const buttonRef = useRef(null);
 
     const queue = getPlaybackQueue();
     const isActive = queue[currentSongIndex]?.id === song.id;
@@ -42,7 +44,7 @@ const Song = ({ song, onPlay }) => {
 
         const handleClickOutside = (e) => {
             if (
-                menuRef.current && buttonRef &&
+                menuRef.current && buttonRef.current &&
                 !menuRef.current.contains(e.target) && 
                 !buttonRef.current.contains(e.target)
             ) dismissMenu();

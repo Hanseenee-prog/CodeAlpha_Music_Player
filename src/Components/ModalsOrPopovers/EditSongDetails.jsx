@@ -1,11 +1,12 @@
-import { useState, useRef, useEffect } from 'react';
-import { X, Music, User, Image as ImageIcon, Save, Check } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { X, Music, User, Image as ImageIcon, Save } from 'lucide-react';
+import { get } from 'idb-keyval';
 import { useAudio } from '../../Contexts/AudioContext';
 import { useSongCover } from '../../Hooks/useSongCover';
 
 const EditSongDetails = ({ currentSongToEdit, setIsEditingSong }) => {
     const { setOriginalQueue, setActiveQueue, setLibrarySongs, setHistory } = useAudio();
-    const { coverSrc, handleNewImage } = useSongCover(currentSongToEdit?.id);
+    const { coverSrc, handleNewImage } = useSongCover(currentSongToEdit?.id, currentSongToEdit?.coverImage);
     const fileRef = useRef(null);
 
     // Local state for form handling
@@ -16,22 +17,37 @@ const EditSongDetails = ({ currentSongToEdit, setIsEditingSong }) => {
         coverImage: currentSongToEdit?.coverImage || ""
     });
 
-    // useEffect to cleanup memory
-    useEffect(() => {
-        console.log(typeof formData?.coverImage)
-        if (formData?.coverImage.startsWith("blob:")) URL.revokeObjectURL(formData.coverImage);
-    }, [formData.coverImage])
+    // Sync coverSrc with formData for preview purposes only
+    // useEffect(() => {
+    //     setFormData(prev => ({ ...prev, coverImage: coverSrc }));
+    // }, [coverSrc]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Updated Data:", formData);
+        
+        // Get the actual base64 from IndexedDB instead of using ObjectURL
+        const base64FromDB = await get(`song-cover-${currentSongToEdit.id}`);
+        
+        console.log("Base64 from DB:", base64FromDB ? "Found" : "Not found");
+        
+        const updatedData = {
+            id: formData.id,
+            title: formData.title,
+            artist: formData.artist,
+            // Use base64 from IndexedDB if available, otherwise keep original
+            coverImage: base64FromDB || currentSongToEdit.coverImage
+        };
 
-        const updateSongInList = (list) => list.map(song => song?.id === currentSongToEdit?.id ? { ...song, ...formData } : song)
+        console.log("Updated Data:", updatedData);
+
+        const updateSongInList = (list) => list.map(song => 
+            song?.id === currentSongToEdit?.id ? { ...song, ...updatedData } : song
+        )
 
         setOriginalQueue(updateSongInList);
         setLibrarySongs(updateSongInList);
@@ -67,15 +83,15 @@ const EditSongDetails = ({ currentSongToEdit, setIsEditingSong }) => {
                     {/* Cover Image Preview/Input */}
                     <div className="flex flex-col items-center gap-4">
                         <div 
-                            className="relative group w-32 h-32 rounded-2xl overflow-hidden shadow-lg border-4 border-white bg-gray-100"
+                            className="relative group w-32 h-32 rounded-2xl overflow-hidden shadow-lg border-4 border-white bg-gray-100 cursor-pointer"
                             onClick={() => fileRef.current.click()}
                         >
                             <img 
-                                src={formData.coverImage || "/api/placeholder/128/128"} 
+                                src={coverSrc || "/api/placeholder/128/128"} 
                                 alt="Preview" 
                                 className="w-full h-full object-cover"
                             />
-                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                 <ImageIcon className="text-white" size={24} />
                             </div>
                         </div>
@@ -85,7 +101,10 @@ const EditSongDetails = ({ currentSongToEdit, setIsEditingSong }) => {
                             ref={fileRef}
                             accept="image/*"
                             hidden
-                            onChange={(e) => handleNewImage(e.target.files[0])}
+                            onChange={(e) => {
+                                const file = e.target.files[0];
+                                if (file) handleNewImage(file);
+                            }}
                         />
 
                         <input 

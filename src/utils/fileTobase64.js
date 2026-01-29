@@ -9,5 +9,5 @@ export const fileToBase64 = (file) => {
         reader.onerror = reject;
         
         reader.readAsDataURL(file);
-    }).then((string) => console.log(string));
+    })
 }
