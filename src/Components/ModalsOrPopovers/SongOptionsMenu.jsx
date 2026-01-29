@@ -21,6 +21,7 @@ const SongOptionsMenu = ({
     } = handlers;
 
     const location = useLocation();
+    const playlistId = location.pathname.split('/playlists/')[1];
 
     // Determine Context based on Path
     const isFavoritesPage = location.pathname.includes('/favorites');
@@ -54,7 +55,7 @@ const SongOptionsMenu = ({
             {/* --- CONTEXT SPECIFIC ACTIONS --- */}
             {isPlaylistPage && (
                 <button 
-                    onClick={(e) => { e.stopPropagation(); onRemoveFromPlaylist(id); onClose(); }}
+                    onClick={(e) => { e.stopPropagation(); onRemoveFromPlaylist(id, playlistId); onClose(); }}
                     className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-orange-600 hover:bg-orange-50 transition-colors"
                 >
                     <ListX size={16} /> Remove from this Playlist

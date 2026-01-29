@@ -12,7 +12,7 @@ export const PlaylistProvider = ({ children }) => {
     const [selectedSong, setSelectedSong] = useState(null); // song to pass into the add to playlist func or delete func
     const [view, setView] = useState("select"); 
     const [playlistName, setPlaylistName] = useState("");
-    const { librarySongs } = useAudio();
+    const { librarySongs, setActiveQueue, setOriginalQueue } = useAudio();
 
     useEffect(() => {
         if (!isOpenModal) setPlaylistName("");
@@ -84,6 +84,24 @@ export const PlaylistProvider = ({ children }) => {
         setPlaylistName("");
     }
 
+    const removeFromPlaylist = (songId, playlistId) => {
+        const updatedPlaylists = playlists.map(pl => {
+            if (pl.playlistId !== playlistId) return pl;
+            return {
+                ...pl,
+                songs: pl.songs.filter(id => id !== songId)
+            };
+        });
+
+        setPlaylists(updatedPlaylists);
+        
+        const removeFilter = (list) => list.filter(song => song?.id !== songId);
+        setOriginalQueue(removeFilter);
+        setActiveQueue(removeFilter);
+
+        localStorage.setItem('playlists', JSON.stringify(updatedPlaylists));
+    };
+
     const value = {
         playlists, setPlaylists,
         isOpenModal, setIsOpenModal,
@@ -92,7 +110,7 @@ export const PlaylistProvider = ({ children }) => {
         playlistName, setPlaylistName,
         addToPlaylist, addPlaylist,
         deletePlaylist, editPlaylistName,
-        playlistSongs
+        playlistSongs, removeFromPlaylist
     }
 
     return (

@@ -14,10 +14,11 @@ const Song = ({ song, onPlay }) => {
     // Context Hooks
     const { currentSongIndex, isPlaying, getPlaybackQueue, deleteSong } = useAudio();
     const { isFavorite, toggleFavorite } = useFavsContext();
-    const { setIsOpenModal, setSelectedSong } = usePlaylistContext();
+    const { setIsOpenModal, setSelectedSong, removeFromPlaylist } = usePlaylistContext();
     
     // Local State
     const { coverSrc } = useSongCover(id, coverImage);
+
     const [isDeleteSongModalOpen, setIsDeleteSongModalOpen] = useState(false);
     
     // Dropdown Context (from Outlet)
@@ -58,8 +59,7 @@ const Song = ({ song, onPlay }) => {
         onToggleFavorite: toggleFavorite,
         isFavorite: isFavorite(id),
         onAddToPlaylist: (song) => { setIsOpenModal(true); setSelectedSong(song); },
-        // Placeholder: Add your specific remove logic here later
-        onRemoveFromPlaylist: (songId) => console.log("Remove from playlist logic here for ID:", songId) 
+        onRemoveFromPlaylist: (songId, playlistId) => removeFromPlaylist(songId, playlistId) 
     };
 
     return (
