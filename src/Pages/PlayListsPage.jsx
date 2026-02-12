@@ -3,6 +3,7 @@ import { ListMusic, Plus, FolderHeart } from 'lucide-react';
 import { useCallback } from 'react';
 import { usePlaylistContext } from '../Contexts/PlaylistContext.jsx';
 
+// This component displays all the playlist cards
 const PlayLists = () => {
     const { playlists, setIsOpenModal, setView, setSelectedSong } = usePlaylistContext();
 

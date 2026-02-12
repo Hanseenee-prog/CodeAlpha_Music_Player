@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Play, MoreHorizontal, Music2, ArrowLeft, Clock, Trash2, Edit2 } from 'lucide-react';
+import { Play, MoreHorizontal, Music2, ArrowLeft, Clock, Trash2, Edit2, PlusCircle } from 'lucide-react';
 import Song from './Song';
 import DeleteConfirmModal from './ModalsOrPopovers/DeleteConfirmModal';
 import PlaylistNameEditor from './ModalsOrPopovers/PlaylistNameEditor';
@@ -8,17 +8,27 @@ import { useAudio } from "../Contexts/AudioContext";
 import handleSongClick from "../utils/handleSongClick";
 import { usePlaylistContext } from '../Contexts/PlaylistContext.jsx';
 import { useOutletContext } from "react-router-dom";
+import AddSongsToPlaylistModal from './ModalsOrPopovers/AddSongsToPlaylistModal.jsx';
 
+// This component holds the individual playlist songs
 const PlayList = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { playSong } = useAudio();
+
     const [showMenu, setShowMenu] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const { dismissMenu } = useOutletContext();
+    const [isAddSongsModalOpen, setIsAddSongsModalOpen] = useState(false)
     
-    const { playlists, deletePlaylist, editPlaylistName, playlistSongs } = usePlaylistContext();
+    const { playSong } = useAudio();    
+    const { dismissMenu } = useOutletContext();
+    const { 
+        playlists, 
+        deletePlaylist, 
+        editPlaylistName, 
+        playlistSongs,
+        addToPlaylist
+    } = usePlaylistContext();
     
     const playlist = playlists.find(pl => pl.playlistId === id);
 
@@ -32,6 +42,14 @@ const PlayList = () => {
         navigate('/playlists');
     };
 
+    // [NEW] Handler for when the user clicks "Save" in the new modal
+    const handleAddSongsConfirm = (selectedSongIds) => {
+        // 1. Call context function to update DB/State
+        addToPlaylist(playlist.playlistId, selectedSongIds);
+        // 2. Close the modal
+        setIsAddSongsModalOpen(false);
+        // 3. Optional: Show success toast notification
+    };
     
     if (!playlist) {
         return (
@@ -121,12 +139,27 @@ const PlayList = () => {
                                         <div className="absolute left-0 md:left-auto md:right-0 mt-2 w-48 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 py-2 overflow-hidden animate-in fade-in zoom-in-95 duration-150 origin-top-left md:origin-top-right">
                                             <button 
                                                 className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors"
+                                                onClick={() => { 
+                                                    setShowMenu(false); 
+                                                    setIsAddSongsModalOpen(true);
+                                                }}
+                                            >
+                                                <PlusCircle size={16} className="text-gray-400" />
+                                                Add Songs
+                                            </button>
+                                            
+                                            <div className="h-px bg-gray-100 mx-2" />
+
+                                            <button 
+                                                className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors"
                                                 onClick={() => { setShowMenu(false); setIsEditing(true); }}
                                             >
                                                 <Edit2 size={16} className="text-gray-400" />
                                                 Edit Playlist Name
                                             </button>
+
                                             <div className="h-px bg-gray-100 mx-2" />
+
                                             <button 
                                                 className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors"
                                                 onClick={() => { 
@@ -159,6 +192,14 @@ const PlayList = () => {
 
                 <div className="h-24" />
             </div>
+
+            {/* [NEW] Render the new Modal at the bottom (outside main flow) */}
+            <AddSongsToPlaylistModal 
+                 isOpen={isAddSongsModalOpen}
+                 onClose={() => setIsAddSongsModalOpen(false)}
+                 onConfirm={handleAddSongsConfirm}
+                 currentPlaylistSongs={songs} // Pass this so we don't show songs already in the playlist
+             />
 
             <DeleteConfirmModal 
                 isOpen={isDeleteModalOpen}

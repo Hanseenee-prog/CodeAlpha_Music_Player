@@ -24,25 +24,39 @@ export const PlaylistProvider = ({ children }) => {
         return (librarySongs || []).filter(song => currentPlaylist?.songs.includes((song.id)));
     }, [librarySongs, playlists])
 
-    // Adds a song to an existing playlist
-    const addToPlaylist = (playlistId, song) => {
+    const addToPlaylist = (playlistId, incomingSongs) => {
+        // Convert single object to array if it isn't one already
+        const songsToAdd = Array.isArray(incomingSongs) ? incomingSongs : [incomingSongs];
+
         setPlaylists(prev => {
             const updated = prev.map(pl => {
                 if (pl.playlistId !== playlistId) return pl;
 
-                // Check if a song exists to prevent duplication
-                const exists = pl.songs.includes(song.id)
-                if (exists){
-                    console.log('song exists');
+                // Filter out IDs that are already in the playlist to prevent duplicates
+                const newUniqueIds = songsToAdd
+                    .map(s => s.id)
+                    .filter(id => !pl.songs.includes(id));
+
+                // If no new songs are actually being added, return original playlist
+                if (newUniqueIds.length === 0) {
+                    console.log('All selected songs already exist in this playlist');
                     return pl;
+                }
+
+                // Create the updated playlist object
+                const updatedPlaylist = {
+                    ...pl,
+                    songs: [...newUniqueIds, ...pl.songs] // Newest additions at the top
                 };
 
-                return {
-                    ...pl,
-                    songs: [song.id, ...pl.songs]
-                } 
+                // --- APPWRITE SYNC STEP ---
+                // If user is logged in, you would call your Appwrite service here:
+                // updatePlaylistInAppwrite(playlistId, updatedPlaylist.songs);
+                
+                return updatedPlaylist;
             });
 
+            // 4. Update LocalStorage (Acts as your local cache)
             localStorage.setItem('playlists', JSON.stringify(updated));
             return updated;
         });
