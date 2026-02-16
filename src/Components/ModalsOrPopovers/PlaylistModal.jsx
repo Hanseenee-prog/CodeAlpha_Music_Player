@@ -1,3 +1,4 @@
+import { useLocation } from 'react-router-dom';
 import { usePlaylistContext } from '../../Contexts/PlaylistContext';
 import { Plus, ListMusic, ArrowLeft, X } from 'lucide-react';
 
@@ -14,13 +15,16 @@ const PlaylistModal = () => {
 
     const MAX_LENGTH = 25;
 
+    const location = useLocation();
+    const inPlaylistPath = () => location.pathname === '/playlists';
+
     if (!isOpenModal) return null;
 
     return (
         <div className="fixed inset-0 z-120 flex items-center justify-center p-4">
             <div 
                 className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-in fade-in duration-300" 
-                onClick={() => setIsOpenModal(false)}
+                onClick={() => { setIsOpenModal(false); setView("select") }}
             />
 
             <div className="relative w-full max-w-sm bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/20 animate-in zoom-in-95 duration-200">
@@ -30,7 +34,7 @@ const PlaylistModal = () => {
                     <div className="flex items-center gap-3">
                         {view === "create" && (
                             <button onClick={() => { setView("select"); setPlaylistName(""); }} className="p-1 hover:bg-gray-100 rounded-full transition-colors">
-                                <ArrowLeft size={20} className="text-gray-600" />
+                                <ArrowLeft size={20} className={`${inPlaylistPath ? 'hidden' : 'block'} text-gray-600`} />
                             </button>
                         )}
                         <h2 className="text-lg font-bold text-gray-900 tracking-tight">
