@@ -18,12 +18,14 @@ export const PlaylistProvider = ({ children }) => {
         if (!isOpenModal) setPlaylistName("");
     }, [isOpenModal])
 
+    // Gets a playlist array of songs based on the playlist id
     const playlistSongs = useCallback((currentPlaylist) => {
         if (!currentPlaylist) return [];
 
         return (librarySongs || []).filter(song => currentPlaylist?.songs.includes((song.id)));
     }, [librarySongs, playlists])
 
+    // Adds song(s) to a playlist 
     const addToPlaylist = (playlistId, incomingSongs) => {
         // Convert single object to array if it isn't one already
         const songsToAdd = Array.isArray(incomingSongs) ? incomingSongs : [incomingSongs];
@@ -36,7 +38,7 @@ export const PlaylistProvider = ({ children }) => {
                 const newUniqueIds = songsToAdd
                     .map(s => s.id)
                     .filter(id => !pl.songs.includes(id));
-
+                
                 // If no new songs are actually being added, return original playlist
                 if (newUniqueIds.length === 0) {
                     console.log('All selected songs already exist in this playlist');
@@ -56,7 +58,7 @@ export const PlaylistProvider = ({ children }) => {
                 return updatedPlaylist;
             });
 
-            // 4. Update LocalStorage (Acts as your local cache)
+            // Update LocalStorage
             localStorage.setItem('playlists', JSON.stringify(updated));
             return updated;
         });
@@ -77,6 +79,8 @@ export const PlaylistProvider = ({ children }) => {
         localStorage.setItem('playlists', JSON.stringify([newPlaylist, ...playlists]));
     }
 
+
+    // Deletes a playlist
     const deletePlaylist = (playlistId) => {
         setPlaylists(prev => {
             const updated = prev.filter(pl => pl.playlistId !== playlistId);
@@ -86,10 +90,10 @@ export const PlaylistProvider = ({ children }) => {
         });
     };
 
+    // Edits a playlist name
     const editPlaylistName = (playlistId, playlistName) => {
         setPlaylists(prev => {
             const updated = prev.map(pl => pl.playlistId === playlistId ? { ...pl, name: playlistName } : pl);
-            console.log(updated)
 
             localStorage.setItem('playlists', JSON.stringify(updated));
             return updated;
@@ -98,6 +102,7 @@ export const PlaylistProvider = ({ children }) => {
         setPlaylistName("");
     }
 
+    // Removes a song from a playlist
     const removeFromPlaylist = (songId, playlistId) => {
         const updatedPlaylists = playlists.map(pl => {
             if (pl.playlistId !== playlistId) return pl;

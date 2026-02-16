@@ -1,22 +1,22 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useAudio } from '../../Contexts/AudioContext';
 
 const AddSongsToPlaylistModal = ({ isOpen, onClose, onConfirm, currentPlaylistSongs }) => {
     const { librarySongs } = useAudio(); 
-    const [selectedIds, setSelectedIds] = useState([]);
+    const [selectedSongs, setSelectedSongs] = useState([]);
 
-    useEffect(() => {
-        if(isOpen) setSelectedIds([]);
-    }, [isOpen]);
+    // useEffect(() => {
+    //     if(isOpen) setSelectedSongs([]);
+    // }, [isOpen]);
 
     // Filter out songs already in the playlist
     const availableSongs = librarySongs.filter(song => 
         !currentPlaylistSongs.find(pSong => pSong.id === song.id)
     );
 
-    const toggleSong = (id) => {
-        setSelectedIds(prev => 
-            prev.includes(id) ? prev.filter(itemId => itemId !== id) : [...prev, id]
+    const toggleSong = (song) => {
+        setSelectedSongs(prev => 
+            prev.includes(song.id) ? prev.filter(itemId => itemId !== song.id) : [...prev, song]
         );
     };
 
@@ -25,7 +25,7 @@ const AddSongsToPlaylistModal = ({ isOpen, onClose, onConfirm, currentPlaylistSo
     return (
         <div 
             className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 backdrop-blur-sm p-6"
-            onClick={onClose}
+            onClick={() => { onClose(); setSelectedSongs([]); }}
         >
             <div 
                 className="bg-white w-full max-w-sm max-h-125 md:max-h-[60vh] rounded-2xl shadow-xl overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200"
@@ -37,26 +37,26 @@ const AddSongsToPlaylistModal = ({ isOpen, onClose, onConfirm, currentPlaylistSo
                     <p className="text-xs text-gray-500">Select tracks for this playlist</p>
                 </div>
 
-                {/* Scrollable Song List - Optimized Padding */}
+                {/* Scrollable Song List */}
                 <div className="flex-1 overflow-y-auto p-1.5 custom-scrollbar bg-gray-50/30">
                     {availableSongs.length > 0 ? (
                         availableSongs.map(song => (
                             <div 
                                 key={song.id} 
-                                onClick={() => toggleSong(song.id)}
+                                onClick={() => toggleSong(song)}
                                 className={`flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all mb-1 ${
-                                    selectedIds.includes(song.id) 
+                                    selectedSongs.includes(song) 
                                     ? 'bg-indigo-50 border border-indigo-100' 
                                     : 'hover:bg-white hover:shadow-sm border border-transparent'
                                 }`}
                             >
                                 {/* Checkbox Indicator */}
                                 <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all shrink-0 ${
-                                    selectedIds.includes(song.id) 
+                                    selectedSongs.includes(song) 
                                     ? 'bg-indigo-600 border-indigo-600' 
                                     : 'border-gray-300 bg-white'
                                 }`}>
-                                    {selectedIds.includes(song.id) && (
+                                    {selectedSongs.includes(song) && (
                                         <div className="w-1.5 h-1.5 bg-white rounded-full" />
                                     )}
                                 </div>
@@ -79,17 +79,17 @@ const AddSongsToPlaylistModal = ({ isOpen, onClose, onConfirm, currentPlaylistSo
                 {/* Footer */}
                 <div className="p-4 bg-white border-t border-gray-50 flex items-center justify-between">
                     <button 
-                        onClick={onClose}
+                        onClick={() => { onClose(); setSelectedSongs([]); }}
                         className="text-xs font-semibold text-gray-500 hover:text-gray-700 p-2"
                     >
                         Cancel
                     </button>
                     <button 
-                        onClick={() => onConfirm(selectedIds)}
-                        disabled={selectedIds.length === 0}
+                        onClick={() => { onConfirm(selectedSongs); setSelectedSongs([]); }}
+                        disabled={selectedSongs.length === 0}
                         className="px-5 py-2 bg-indigo-600 disabled:bg-gray-200 disabled:text-gray-400 text-white rounded-full text-xs font-bold shadow-md shadow-indigo-100 transition-all active:scale-95"
                     >
-                        Add {selectedIds.length > 0 && selectedIds.length} {selectedIds.length === 1 ? 'Song' : 'Songs'}
+                        Add {selectedSongs.length > 0 && selectedSongs.length} {selectedSongs.length === 1 ? 'song' : 'songs'}
                     </button>
                 </div>
             </div>
