@@ -6,6 +6,7 @@ import {
 import { useAudio } from '../Contexts/AudioContext';
 import { useNavigate } from 'react-router-dom';
 import { useFavsContext } from '../Contexts/FavoritesContext';
+import { timeHandler } from '../utils/formatTime';
 
 const MiniBar = () => {
     const { 
@@ -25,17 +26,12 @@ const MiniBar = () => {
 
     const { id, title, artist, duration, coverImage } = song;
 
-    const timeToSec = (time) => {
-        const [minutes, seconds] = time.split(":").map(Number);
-        return (minutes * 60) + seconds;
-    };
-
-    const durationSec = timeToSec(duration);
-    const progress = durationSec > 0 ? (currentTime / durationSec) * 100 : 0;
+    const { seconds } = timeHandler(duration);
+    const progress = seconds > 0 ? (currentTime / seconds) * 100 : 0;
 
     const handleSliderChange = (e) => {
         const percentage = e.target.value;
-        const newTime = Math.floor((percentage / 100) * durationSec);
+        const newTime = Math.floor((percentage / 100) * seconds);
         handleSeek(newTime);
     };
 

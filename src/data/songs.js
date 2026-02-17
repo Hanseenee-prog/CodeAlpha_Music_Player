@@ -31,7 +31,7 @@ const songs = [
         title: 'Sunset Boulevard',
         artist: 'David Brown',
         album: 'City Lights',
-        duration: '0:21',
+        duration: '21',
         audioSrc: '/songs/music-4.mp3',
         coverImage: '/images/image.webp'
     },
@@ -40,7 +40,7 @@ const songs = [
         title: 'Midnight City',
         artist: 'M83',
         album: 'Hurry Up, We\'re Dreaming',
-        duration: '0:38',
+        duration: 38,
         audioSrc: '/songs/music-5.mp3',
         coverImage: '/images/image.webp'
     },
@@ -58,7 +58,7 @@ const songs = [
         title: 'Clocks',
         artist: 'Coldplay',
         album: 'A Rush of Blood to the Head',
-        duration: '0:19',
+        duration: 19,
         audioSrc: '/songs/music-7.mp3',
         coverImage: '/images/image.webp'
     }

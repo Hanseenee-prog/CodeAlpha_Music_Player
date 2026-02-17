@@ -7,9 +7,11 @@ import { useRef, useEffect, useState } from "react";
 import DeleteConfirmModal from "./ModalsOrPopovers/DeleteConfirmModal";
 import { useSongCover } from "../Hooks/useSongCover";
 import SongOptionsMenu from "./ModalsOrPopovers/SongOptionsMenu"; // Import the new component
+import { timeHandler } from "../utils/formatTime";
 
 const Song = ({ song, onPlay }) => {
     const { id, title, artist, duration, coverImage } = song;
+    const { formatted } = timeHandler(duration);
     
     // Context Hooks
     const { currentSongIndex, isPlaying, getPlaybackQueue, deleteSong } = useAudio();
@@ -139,7 +141,7 @@ const Song = ({ song, onPlay }) => {
                 </div>
                 
                 <span className="text-xs font-mono text-gray-400 tabular-nums">
-                    {duration}
+                    {formatted}
                 </span>
             </div>
 

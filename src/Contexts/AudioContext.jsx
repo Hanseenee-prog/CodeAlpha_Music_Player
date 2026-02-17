@@ -72,7 +72,13 @@ export const AudioProvider = ({ children }) => {
         localStorage.setItem('music-history', JSON.stringify(history));
     }, [currentSongIndex, currentTime, volume, repeat, originalQueue, activeQueue, librarySongs, history])
 
-    const playSong = (index, newQueue = originalQueue, source = 'library', skipQueueUpdate = false, shouldAutoPlay = true) => {
+    const playSong = (
+        index, 
+        newQueue = originalQueue, 
+        source = 'library', 
+        skipQueueUpdate = false, 
+        shouldAutoPlay = true
+    ) => {
         const song = newQueue[index];
         if (!song) return;
 

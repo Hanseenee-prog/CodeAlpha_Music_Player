@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useAudio } from "../Contexts/AudioContext";
+import { timeHandler } from "../utils/formatTime";
 import { 
     Play, Pause, SkipBack, SkipForward, 
     Shuffle, Repeat, Repeat1, Heart, 
@@ -44,12 +45,6 @@ const NowPlaying = () => {
            ? ([queue[currentSongIndex]])
            : []; 
 
-    const timeToSec = (time) => {
-        if (!time) return 0;
-        const [m, s] = time.split(":").map(Number);
-        return (m * 60) + s;
-    };
-
     if (!nowPlaying) return (
         <div className="h-full flex items-center justify-center bg-gray-50 text-gray-400 font-medium">
             Select a track to start vibing
@@ -57,8 +52,8 @@ const NowPlaying = () => {
     );
 
     const { id, title, artist, duration, coverImage } = nowPlaying;
-    const durationSec = timeToSec(duration);
-    const progress = durationSec > 0 ? (currentTime / durationSec) * 100 : 0;
+    const { seconds, formatted } = timeHandler(duration);
+    const progress = seconds > 0 ? (currentTime / seconds) * 100 : 0;
 
     return (
         <div className="relative h-4/5 lg:h-[85%] w-full overflow-hidden bg-white flex flex-col md:flex-row">
@@ -121,7 +116,7 @@ const NowPlaying = () => {
                         <div className="relative h-6 flex items-center group/scrub">
                             <input 
                                 type="range" min="0" max="100" value={progress}
-                                onChange={(e) => handleSeek(Math.floor((e.target.value / 100) * durationSec))}
+                                onChange={(e) => handleSeek(Math.floor((e.target.value / 100) * seconds))}
                                 className="absolute w-full h-1.5 bg-gray-100 rounded-full appearance-none cursor-pointer accent-blue-600 z-10 opacity-0"
                             />
                             <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
@@ -130,7 +125,7 @@ const NowPlaying = () => {
                         </div>
                         <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-gray-400">
                             <span>{Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60).toString().padStart(2, '0')}</span>
-                            <span>{duration}</span>
+                            <span>{formatted}</span>
                         </div>
                     </div>
 
