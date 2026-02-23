@@ -19,6 +19,7 @@ export const useSongCover = (songId, fallbackCover) => {
         const loadCover = async () => {
             try {
                 const base64 = await get(`song-cover-${songId}`);
+                console.log('Loaded song cover', songId)
 
                 if (!base64 || !active) return;
                 setCoverSrc(base64);

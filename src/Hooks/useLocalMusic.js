@@ -1,4 +1,4 @@
-import { extractMetadata } from "../utils/extractSongMetadata";
+import { parseSongFile } from "../utils/parseSongFile";
 import { get, set } from "idb-keyval";
 import { useEffect, useState } from "react";
 
@@ -8,86 +8,69 @@ const useLocalMusic = () => {
 
     // Load saved songs automatically when the app starts.
     useEffect(() => {
-        let active = true;
-
         const loadSongs = async () => {
             try {
-                const savedSongs = await get("device-files");
+                const savedSongs = await get("device-songs");
 
-                if (!savedSongs || !active) return;
+                if (!savedSongs) return;
 
-                if (Array.isArray(savedSongs)) {
-                    const hydratedSongs = savedSongs.map(song => {
-                        // Generate the playable source from file Blob
-                        const audioSrc = URL.createObjectURL(song.file);
-
-                        let coverImage = song.coverImage; // Existing or null
-                        if (song.coverImage) coverImage = URL.createObjectURL(song.coverImage);
-
+                const hydratedSongs = savedSongs.map(song => {
+                    // Safety check: ensure file object survived
+                    if (song.file instanceof Blob) {
+                        console.log("coverImage", song.title);
                         return {
                             ...song, 
-                            audioSrc,
-                            coverImage
+                            audioSrc: URL.createObjectURL(song.file), // Generate the playable source from file Blob
                         }
-                    })
-                    setDeviceSongs(hydratedSongs);
-                };
+                    }
+
+                    console.warn("Skipping corrupt song entry:", song.title);
+                    return null;  
+                })
+                .filter(Boolean) // Remove any null/corrupt entries
+
+                setDeviceSongs(hydratedSongs);
             } 
             catch (err) {
                 console.error("Error loading songs:", err);
             }
         };
+
         loadSongs();
 
-        return () => {
-            deviceSongs.forEach(song => {
-                if (song.audioSrc) URL.revokeObjectURL(song.audioSrc);
-                if (song.coverImage && song.coverImage.startsWith("blob:")) URL.revokeObjectURL(song.coverImage);
-            });
-        };
+        return () => deviceSongs.forEach(song => URL.revokeObjectURL(song.audioSrc));
     }, []);
-
-
-    // Sync the React state (what you see) with the Database (what is saved).
-
-    // Reuse the logic anywhere in your app.
-
 
     // Add song(s) to indexedDB
     const addSongs = async (files) => {
         if (!files) return;
+        const filesArray = Array.from(files);
 
-        const newSongs = [];
+        const newSongs = await Promise.all(filesArray.map(parseSongFile));
 
-        // Loop through all selected files
-        for (const file of files) {
-            // 1. Get the metadata
-            const meta = await extractMetadata(file);
+        // Update Database
+        const existingSongs = (await get('device-songs')) || [];
 
-            // 2. Create the Song Object (Combine file + metadata)
-            const song = {
-                id: Date.now() + Math.random(), // Unique ID
-                file: file, // We store the actual File object for IDB
-                audioSrc: URL.createObjectURL(file), // For immediate playback
-                status: "device",
-                ...meta // Spreads title, artist, coverImage, etc.
-            };
+        // Don't save the audio source to indexedDB
+        // It loops through the array and then removes the audioSrc and returns the rest of the items in the array
+        // eslint-disable-next-line no-unused-vars
+        const songsToSave = [...existingSongs, ...newSongs].map(({ audioSrc, ...remainingProps }) => remainingProps)
+        await set('device-songs', songsToSave);
 
-            newSongs.push(song);
-        }
-
-        // 3. Update State & Database
+        // Update the state
         setDeviceSongs((prev) => [...prev, ...newSongs]);
-        
-        // For IDB, we usually don't store the Blob URLs (they expire), 
-        // we just store the file and metadata, and regenerate URLs on load.
-        // However, storing the extracted metadata saves processing time on next load!
-        await set('device-files', [...deviceSongs, ...newSongs]);
     }
 
     // Remove song(s) from indexedDB
-    const removeSongs = () => {
+    const removeSongs = async (songIds) => {
+        const songIdsToRemove = Array.from(songIds);
 
+        const existingSongIds = await get('device-songs');
+        const songsToSave = existingSongIds.filter(id => !songIdsToRemove.includes(id));
+        await set('device-songs', songsToSave);
+
+        // Update State
+        setDeviceSongs(prev => prev.filter(song => !songIdsToRemove.includes(song.id)));
     }
 
     return {
