@@ -11,9 +11,9 @@ export const parseSongFile = async (file) => {
     
     let id = crypto.randomUUID();
 
-    // Handle Album Art (it comes as a buffer, needs to be a data URI
-    // let coverImage = "/images/image.webp";
+    // let fallbackCover = "/images/image.webp";
 
+    // Handle Album Art (it comes as a buffer, needs to be a data URI
     if (picture && picture.length > 0) {
       const buffer = new Uint8Array(picture[0].data);
       const binary = buffer.reduce((data, byte) => data + String.fromCharCode(byte), '');
@@ -40,7 +40,7 @@ export const parseSongFile = async (file) => {
       title: title || file.name.replace(/\.[^/.]+$/, ""),
       artist: artist || "Unknown Artist",
       album: album || "Unknown Album",
-      // coverImage, 
+      // coverImage: fallbackCover, 
       audioSrc: URL.createObjectURL(file), // Object URL For immediate use
       duration: metadata.format.duration || 0,
     };

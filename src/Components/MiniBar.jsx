@@ -7,6 +7,7 @@ import { useAudio } from '../Contexts/AudioContext';
 import { useNavigate } from 'react-router-dom';
 import { useFavsContext } from '../Contexts/FavoritesContext';
 import { timeHandler } from '../utils/formatTime';
+import { useSongCover } from '../Hooks/useSongCover';
 
 const MiniBar = () => {
     const { 
@@ -25,6 +26,9 @@ const MiniBar = () => {
     if (!song) return null;
 
     const { id, title, artist, duration, coverImage } = song;
+
+    /* eslint-disable react-hooks/rules-of-hooks */
+    const { coverSrc } = useSongCover(id, coverImage);
 
     const { seconds } = timeHandler(duration);
     const progress = seconds > 0 ? (currentTime / seconds) * 100 : 0;
@@ -77,7 +81,7 @@ const MiniBar = () => {
             <div className="flex items-center gap-4 w-1/3 min-w-0">
                 <div className="relative">
                     <img 
-                        src={coverImage} 
+                        src={coverSrc} 
                         className="w-14 h-14 rounded-2xl object-cover shadow-lg transform transition-transform group-hover:scale-105" 
                         alt="cover" 
                     />

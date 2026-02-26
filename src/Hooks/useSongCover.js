@@ -8,7 +8,7 @@ import { fileToBase64 } from "../utils/fileTobase64";
     * - ObjectURL (temporary preview)
     * - Base64 (storage)
 */
-export const useSongCover = (songId, fallbackCover) => {
+export const useSongCover = (songId, fallbackCover="/images/image.webp") => {
     const [coverSrc, setCoverSrc] = useState(fallbackCover);
     const [error, setError] = useState(null);
     const objectURLRef = useRef(null);
@@ -21,7 +21,10 @@ export const useSongCover = (songId, fallbackCover) => {
                 const base64 = await get(`song-cover-${songId}`);
                 console.log('Loaded song cover', songId)
 
-                if (!base64 || !active) return;
+                if (!base64 || !active) {
+                    setCoverSrc(fallbackCover);
+                    return
+                };
                 setCoverSrc(base64);
             } catch (err) {
                 console.error("Error loading cover:", err);

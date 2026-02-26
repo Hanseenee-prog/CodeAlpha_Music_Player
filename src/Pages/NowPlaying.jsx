@@ -8,6 +8,8 @@ import {
 } from "lucide-react";
 import handleSongClick from '../utils/handleSongClick';
 import { useFavsContext } from "../Contexts/FavoritesContext";
+import { useSongCover } from "../Hooks/useSongCover";
+import UpNextSongItem from "../Components/upNextSongItem";
 
 const NowPlaying = () => {
     const { 
@@ -52,6 +54,9 @@ const NowPlaying = () => {
     );
 
     const { id, title, artist, duration, coverImage } = nowPlaying;
+
+    /* eslint-disable react-hooks/rules-of-hooks */
+    const { coverSrc } = useSongCover(id, coverImage);
     const { seconds, formatted } = timeHandler(duration);
     const progress = seconds > 0 ? (currentTime / seconds) * 100 : 0;
 
@@ -60,7 +65,7 @@ const NowPlaying = () => {
             {/* Background Ambient Glow */}
             <div 
                 className="absolute inset-0 opacity-10 blur-[100px] pointer-events-none"
-                style={{ backgroundImage: `url(${coverImage})`, backgroundSize: 'cover' }}
+                style={{ backgroundImage: `url(${coverSrc})`, backgroundSize: 'cover' }}
             />
 
             {/* Left: Interactive Media Section */}
@@ -81,7 +86,7 @@ const NowPlaying = () => {
                 <div className="flex-1 flex items-center justify-center w-full min-h-0">
                     <div className="relative group max-h-full aspect-square max-w-70 md:max-w-95 lg:max-w-105">
                         <img 
-                            src={coverImage} 
+                            src={coverSrc} 
                             alt={title}
                             className="w-full h-full rounded-[40px] md:rounded-[56px] shadow-2xl object-cover transition-transform duration-500 group-hover:scale-[1.02]" 
                         />
@@ -168,19 +173,12 @@ const NowPlaying = () => {
                 <div className="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar" ref={scrollDesktopRef}>
                     {(upNextQueue.length > 0) ? (
                         upNextQueue.slice(0, 8).map((song, idx) => (
-                            <div key={`${song.id}-${idx}`} 
-                                className={`
-                                    group flex items-center gap-4 p-2 rounded-2xl transition-colors cursor-pointer 
-                                    ${(song.id === queue[currentSongIndex].id) ? 'bg-blue-100 hover:bg-blue-200' : 'hover:bg-gray-50'}
-                                    `}
+                            <UpNextSongItem 
+                                key={`${song.id}-${idx}`}
+                                song={song}
+                                isActive={song.id === queue[currentSongIndex].id}
                                 onClick={() => handleSongClick(song, queue, playSong, queueSource)}
-                            >
-                                <img src={song.coverImage} className="w-12 h-12 rounded-xl object-cover shadow-sm" alt="art" />
-                                <div className="flex-1 min-w-0">
-                                    <p className="font-bold text-sm truncate text-gray-900">{song.title}</p>
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">{song.artist}</p>
-                                </div>
-                            </div>
+                            />
                         ))
                     ) : (
                         <div className="text-center text-gray-400 py-8 flex flex-col">
@@ -212,19 +210,13 @@ const NowPlaying = () => {
                     <div className="max-h-[60vh] overflow-y-auto space-y-4 pr-2" ref={scrollMobileRef}>
                         {(upNextQueue.length > 0) ? (
                             upNextQueue.slice(0, 10).map((song, idx) => (
-                                <div key={`${song.id}-${idx}`} 
-                                    className={`
-                                        flex items-center gap-4 p-2 hover:bg-gray-100 cursor-pointer
-                                        ${(song.id === queue[currentSongIndex].id) ? 'bg-blue-100 hover:bg-blue-200' : 'hover:bg-gray-50'}
-                                    `}
+                              <UpNextSongItem 
+                                    key={`${song.id}-${idx}`}
+                                    song={song}
+                                    isActive={song.id === queue[currentSongIndex].id}
                                     onClick={() => handleSongClick(song, queue, playSong, queueSource)}
-                                >
-                                    <img src={song.coverImage} className="w-14 h-14 rounded-2xl object-cover shadow-sm" alt="art" />
-                                    <div className="flex-1">
-                                        <p className="font-bold text-sm">{song.title}</p>
-                                        <p className="text-xs text-gray-400 font-bold uppercase">{song.artist}</p>
-                                    </div>
-                                </div>
+                                    size="mobile"
+                                />
                             ))
                         ) : (
                             <div className="text-center text-gray-400 py-12 flex flex-col">

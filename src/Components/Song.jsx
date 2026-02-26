@@ -74,7 +74,7 @@ const Song = ({ song, onPlay }) => {
             <div className="flex items-center gap-4 min-w-0">
                 <div className="relative shrink-0 w-12 h-12 rounded-lg overflow-hidden shadow-sm">
                     <img 
-                        src={coverSrc} 
+                        src={coverSrc || "/images/image.webp"} 
                         className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 
                             ${isActive && isPlaying ? 'brightness-50' : ''}`}
                         alt={title} 
