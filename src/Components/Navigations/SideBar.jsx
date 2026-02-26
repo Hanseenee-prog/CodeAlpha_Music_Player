@@ -1,5 +1,7 @@
 import { Home, Heart, ListMusic, Plus, Music2Icon, Library as LibraryIcon } from "lucide-react";
 import { Link, useLocation } from 'react-router-dom';
+import logo_icon from '../../assets/LetStreamdark.svg';
+import logo_text from '../../assets/LetStream-light-text.svg'
 
 const SideBar = () => {
     const { pathname } = useLocation();
@@ -13,11 +15,23 @@ const SideBar = () => {
 
     return ( 
         <nav className="w-full h-full bg-white border-r border-gray-200 flex flex-col items-center lg:items-start transition-all duration-300">
-            <div className="flex items-center p-6 gap-3 mb-4">
-                <div className="p-2 bg-amber-500 rounded-xl text-white">
-                    <Music2Icon size={24} />
+            <div className="flex items-center p-6 gap-3 mb-1">
+                <div className="flex flex-row gap-3">
+                    <img 
+                        src={logo_icon}
+                        width={35} 
+                        height={35} 
+                        alt="Logo"
+                    />
+                
+                    <img 
+                        src={logo_text}
+                        width={90}
+                        height={90}
+                        className="hidden lg:block text-xl font-black tracking-tight"
+                    />
                 </div>
-                <h2 className="hidden lg:block text-xl font-black tracking-tight">My Music</h2>
+
             </div>
 
             <ul className="w-full space-y-1 px-3">
