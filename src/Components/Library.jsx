@@ -19,6 +19,7 @@ const Library = ({ source }) => {
     const fileInputRef = useRef(null);
 
     const currentList = source === 'device' ? deviceSongs : librarySongs; 
+    const queueSource = source === 'device' ? "device" : "library"; 
     
     // Check if we are in the device tab and it is empty
     const isDeviceEmpty = source === 'device' && currentList.length === 0;
@@ -35,17 +36,17 @@ const Library = ({ source }) => {
         do {
             randomIndex = Math.floor(Math.random() * currentList.length);
         } while (randomIndex === currentSongIndex && currentList.length > 1);
-        playSong(randomIndex, currentList);
+        playSong(randomIndex, currentList, queueSource);
     };
 
     const handlePlayAll = () => {
         if (currentList.length > 0) {
-            playSong(0, currentList, "library");
+            playSong(0, currentList, queueSource);
         }
     };
 
     const handleImportFromDevice = (files) => {
-        console.log("Trigger File Picker / Scan Logic here");
+        console.log("About to add the song(s)");
         addSongs(files);
     };
 
@@ -172,7 +173,7 @@ const Library = ({ source }) => {
                                     <Song 
                                         key={song.id || index} 
                                         song={song} 
-                                        onPlay={() => handleSongClick(song, currentList, playSong, 'Library')}
+                                        onPlay={() => handleSongClick(song, currentList, playSong, queueSource)}
                                     />
                                 ))}
                             </div>

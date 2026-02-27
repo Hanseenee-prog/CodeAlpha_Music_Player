@@ -1,10 +1,10 @@
 import { Play } from "lucide-react";
 import { useAudio } from "../Contexts/AudioContext";
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import handleSongClick from "../utils/handleSongClick";
 import { useSongCover } from "../Hooks/useSongCover";
 
-const HistoryItem = ({
+const HistoryItem = React.memo(({
     song,
     onClick
 }) => {
@@ -43,7 +43,7 @@ const HistoryItem = ({
             </div>
         </div>
     )
-}
+})
 
 const RecentlyPlayed = () => {
     const { history, playSong, librarySongs } = useAudio();

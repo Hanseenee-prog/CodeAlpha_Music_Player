@@ -42,7 +42,7 @@ export const AudioProvider = ({ children }) => {
         const audio = audioRef.current;
 
         const handlers = {
-            loadedemetadata: () => setDuration(audio.duration),
+            loadedmetadata: () => setDuration(audio.duration),
             timeupdate: () => setCurrentTime(audio.currentTime),
             play: () => setIsPlaying(true),
             pause: () => setIsPlaying(false),

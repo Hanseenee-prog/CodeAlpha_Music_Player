@@ -3,7 +3,7 @@ import { useAudio } from "../Contexts/AudioContext";
 import { useFavsContext } from "../Contexts/FavoritesContext";
 import { usePlaylistContext } from "../Contexts/PlaylistContext";
 import { useOutletContext } from "react-router-dom";
-import { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import DeleteConfirmModal from "./ModalsOrPopovers/DeleteConfirmModal";
 import { useSongCover } from "../Hooks/useSongCover";
 import SongOptionsMenu from "./ModalsOrPopovers/SongOptionsMenu"; // Import the new component
@@ -52,6 +52,10 @@ const Song = ({ song, onPlay }) => {
         document.addEventListener("pointerdown", handleClickOutside);
         return () => document.removeEventListener("pointerdown", handleClickOutside);
     }, [currentMenuId, dismissMenu]);
+    
+    useEffect(() => {
+        console.log("Song re-rendered:", song.id);
+    }, [song]);
 
     // Handlers to pass to the dropdown
     const menuHandlers = {
@@ -74,7 +78,7 @@ const Song = ({ song, onPlay }) => {
             <div className="flex items-center gap-4 min-w-0">
                 <div className="relative shrink-0 w-12 h-12 rounded-lg overflow-hidden shadow-sm">
                     <img 
-                        src={coverSrc || "/images/image.webp"} 
+                        src={coverSrc} 
                         className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 
                             ${isActive && isPlaying ? 'brightness-50' : ''}`}
                         alt={title} 
@@ -155,4 +159,4 @@ const Song = ({ song, onPlay }) => {
     );
 };
 
-export default Song;
+export default React.memo(Song);
